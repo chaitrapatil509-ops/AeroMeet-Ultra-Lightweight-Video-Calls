@@ -12,6 +12,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
 
@@ -408,6 +409,11 @@ export default function VideoMeetComponent() {
         }
     };
 
+    let copyLink = () => {
+        navigator.clipboard.writeText(window.location.href);
+        alert("Meeting link copied to clipboard!");
+    };
+
     let connect = () => {
         setAskForUsername(false);
         getMedia();
@@ -537,6 +543,11 @@ export default function VideoMeetComponent() {
                                     <p>{screen === true ? "Stop Share" : "Share Screen"}</p>
                                 </button>
                             )}
+
+                            <button className={styles.toolButtonWrapper} onClick={copyLink}>
+                                <ContentCopyIcon style={{ color: "#fff" }} />
+                                <p>Copy Link</p>
+                            </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleNotes}>
                                 <EventNoteIcon style={{ color: sidebarTab === "notes" ? "#0b5cff" : "#fff" }} />
