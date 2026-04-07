@@ -83,9 +83,22 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const clearHistoryOfUser = async () => {
+        try {
+            let request = await client.delete("/delete_all_activity", {
+                params: {
+                    token: localStorage.getItem("token")
+                }
+            });
+            return request.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+
 
     const data = {
-        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin
+        userData, setUserData, addToUserHistory, getHistoryOfUser, clearHistoryOfUser, handleRegister, handleLogin
     }
 
     return (

@@ -79,6 +79,34 @@ export const connectToSocket = (server) => {
 
         })
 
+        socket.on("whiteboard-draw", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    if(elem !== socket.id) {
+                        io.to(elem).emit("whiteboard-draw", data);
+                    }
+                })
+            }
+        });
+
+        socket.on("caption-message", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    io.to(elem).emit("caption-message", data, socket.id);
+                })
+            }
+        });
+
         socket.on("disconnect", () => {
 
             var diffTime = Math.abs(timeOnline[socket.id] - new Date())

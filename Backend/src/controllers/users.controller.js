@@ -1,4 +1,5 @@
 import { User } from "./models/users.model.js";
+import { Meeting } from "./models/meeting.model.js";
 import httpStatus from "http-status";
 import bcrypt, { hash } from "bcrypt";
 import crypto from "crypto";
@@ -90,5 +91,18 @@ const addToHistory = async (req, res) => {
     }
 }
 
+const deleteAllHistory = async (req, res) => {
+    const { token } = req.query;
 
-export { login, register, getUserHistory, addToHistory }
+    try {
+        const user = await User.findOne({ token: token });
+        if(!user) return res.status(httpStatus.NOT_FOUND).json({message: "User not found"});
+        
+        await Meeting.deleteMany({ user_id: user.username });
+        res.status(httpStatus.OK).json({ message: "History cleared securely" });
+    } catch (e) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: `Something went wrong ${e}` });
+    }
+}
+
+export { login, register, getUserHistory, addToHistory, deleteAllHistory }

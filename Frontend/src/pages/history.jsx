@@ -9,11 +9,13 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import HomeIcon from '@mui/icons-material/Home';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
+
 export default function History() {
 
 
-    const { getHistoryOfUser } = useContext(AuthContext);
+    const { getHistoryOfUser, clearHistoryOfUser } = useContext(AuthContext);
 
     const [meetings, setMeetings] = useState([])
 
@@ -33,6 +35,15 @@ export default function History() {
         fetchHistory();
     }, [])
 
+    const clearAll = async () => {
+        try {
+            await clearHistoryOfUser();
+            setMeetings([]);
+        } catch {
+            // Error handling
+        }
+    }
+
     let formatDate = (dateString) => {
 
         const date = new Date(dateString);
@@ -51,7 +62,11 @@ export default function History() {
                 routeTo("/home")
             }}>
                 <HomeIcon />
-            </IconButton >
+            </IconButton>
+
+            <Button onClick={clearAll} variant="contained" color="error" startIcon={<DeleteIcon />} sx={{ ml: 2, mb: 2 }}>
+                Delete History
+            </Button>
             {
                 (meetings.length !== 0) ? meetings.map((e, i) => {
                     return (
