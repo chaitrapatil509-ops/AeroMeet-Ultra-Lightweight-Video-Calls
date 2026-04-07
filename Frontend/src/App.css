@@ -1,96 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary-bg: #111111;
+  --secondary-bg: #1a1a2e;
+  --accent-color: #0b5cff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(15px);
+  --text-main: #ffffff;
+  --text-muted: #aaaaaa;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-bg);
+  color: var(--text-main);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Helpers */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Landing Page Overhaul */
 .landingPageContainer {
   width: 100vw;
   height: 100vh;
-  background: url("/public/background.png");
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: radial-gradient(circle at top right, #1e3a8a 0%, #111111 100%);
   color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .landingPageContainer nav {
-  padding-inline:  3rem ;
-  padding-block: 1.6rem ;
+  padding: 1.5rem 4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .landingPageContainer nav h2 {
   font-size: 1.8rem;
-  font-weight: 550;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #fff, #0b5cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.landingPageContainer nav .navList {
+.navList {
   display: flex;
-  gap: 1.7rem;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navList p, .navList div p {
   cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  margin: 0;
+}
+
+.navList p:hover {
+  color: #0b5cff;
 }
 
 .landingMainContainer {
   display: flex;
-  justify-content: space-between;
-  padding-inline: 3rem;
-  padding-top: 20vh;
-  height: 30vh;
+  flex: 1;
+  justify-content: center;
   align-items: center;
+  padding: 0 4rem;
+  gap: 4rem;
 }
 
-.landingMainContainer > div:nth-child(1) {
-  font-size: 2.2rem;
+.landingMainContainer h1 {
+  font-size: 4rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
-.landingMainContainer > div:nth-child(1) div[role='button'] {
-  background-color: #d97500;
-  width: fit-content;
-  padding: 1rem;
-  border-radius: 20px;
-  margin-top: 1.9rem;
+.landingMainContainer p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin-bottom: 2.5rem;
 }
 
-.landingMainContainer > div:nth-child(1) div[role='button'] a {
+.getStartedBtn {
+  background: #0b5cff;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
   text-decoration: none;
   color: white;
-  font-size: 1.7rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(11, 92, 255, 0.3);
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
-.landingMainContainer > div:nth-child(2) img {
-  height: 60vh;
-  width: auto;
+.getStartedBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(11, 92, 255, 0.5);
+  background: #1a6dff;
+}
+
+/* Home Dashboard Styles */
+.navBar {
+  padding: 1.5rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .meetContainer {
   display: flex;
-  padding-inline: 20px;
-  height: 80vh;
-  gap: 10vw;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  height: 80vh;
+  gap: 3rem;
 }
 
-
-
-.leftPanel {
-  height: 100%;
-  display: flex;
-  align-items: center;
-
-}
-
-.rightPanel {
-  display: flex;
-  align-items: center;
-}
-
-.rightPanel > img {
-  width: 30vw;
-  height: auto;
-  border-radius: 20px;
-}
-.navBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-inline: 20px;
+.dashboardCard {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 3rem;
+  border-radius: 24px;
   text-align: center;
-
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  max-width: 600px;
+  width: 90%;
 }
 
+.dashboardCard h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
