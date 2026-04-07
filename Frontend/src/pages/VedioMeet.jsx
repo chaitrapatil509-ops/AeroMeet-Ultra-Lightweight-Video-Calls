@@ -39,9 +39,9 @@ export default function VideoMeetComponent() {
 
     let [videoAvailable, setVideoAvailable] = useState(true);
     let [audioAvailable, setAudioAvailable] = useState(true);
-    let [video, setVideo] = useState([]);
-    let [audio, setAudio] = useState();
-    let [screen, setScreen] = useState();
+    let [video, setVideo] = useState(true);
+    let [audio, setAudio] = useState(true);
+    let [screen, setScreen] = useState(false);
 
     // Sidebar states: closed, chat, notes, whiteboard
     let [sidebarTab, setSidebarTab] = useState("closed"); 
@@ -609,13 +609,13 @@ export default function VideoMeetComponent() {
                                         <div style={{flex: 1, position: 'relative', background: '#fafafa', cursor: 'crosshair'}}>
                                             <canvas
                                                 ref={canvasRef}
-                                                width={320}
-                                                height={600}
+                                                width={400}
+                                                height={800}
                                                 onMouseDown={startDrawing}
                                                 onMouseMove={draw}
                                                 onMouseUp={stopDrawing}
                                                 onMouseOut={stopDrawing}
-                                                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+                                                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', touchAction: 'none'}}
                                             />
                                         </div>
                                     </div>
