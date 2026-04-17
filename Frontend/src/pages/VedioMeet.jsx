@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from "socket.io-client";
-import { Badge, IconButton, TextField, Button } from '@mui/material';
+import { Badge, IconButton, TextField, Button, FormControlLabel, Switch } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
@@ -37,6 +37,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import DescriptionIcon from '@mui/icons-material/Description';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -95,6 +98,8 @@ export default function VideoMeetComponent() {
     // Whiteboard State
     const canvasRef = useRef(null);
     let [isDrawing, setIsDrawing] = useState(false);
+    let [whiteboardActive, setWhiteboardActive] = useState(false);
+    let [wbTool, setWbTool] = useState("pen");
 
     // Enterprise Features
     let [isFullscreen, setIsFullscreen] = useState(false);
@@ -143,6 +148,7 @@ export default function VideoMeetComponent() {
     const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
+    const frameCounter = useRef(0);
 
     useEffect(() => {
         getPermissions();
