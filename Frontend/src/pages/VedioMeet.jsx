@@ -19,6 +19,10 @@ import SubtitlesIcon from '@mui/icons-material/Subtitles';
 import PanToolIcon from '@mui/icons-material/PanTool';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -77,6 +81,15 @@ export default function VideoMeetComponent() {
     const canvasRef = useRef(null);
     let [isDrawing, setIsDrawing] = useState(false);
 
+    // Enterprise Features
+    let [isFullscreen, setIsFullscreen] = useState(false);
+    let [meetingStartTime, setMeetingStartTime] = useState(null);
+    let [meetingDuration, setMeetingDuration] = useState("00:00");
+    let [videoDevices, setVideoDevices] = useState([]);
+    let [audioDevices, setAudioDevices] = useState([]);
+    let [selectedVideoDevice, setSelectedVideoDevice] = useState("");
+    let [selectedAudioDevice, setSelectedAudioDevice] = useState("");
+
     // Advanced Features
     let [flyingEmojis, setFlyingEmojis] = useState([]);
     let [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
@@ -85,8 +98,33 @@ export default function VideoMeetComponent() {
 
     useEffect(() => {
         getPermissions();
+        fetchDevices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const fetchDevices = async () => {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const vDevices = devices.filter(d => d.kind === 'videoinput');
+            const aDevices = devices.filter(d => d.kind === 'audioinput');
+            setVideoDevices(vDevices);
+            setAudioDevices(aDevices);
+            if (vDevices.length > 0) setSelectedVideoDevice(vDevices[0].deviceId);
+            if (aDevices.length > 0) setSelectedAudioDevice(aDevices[0].deviceId);
+        } catch (err) { console.log(err) }
+    };
+
+    useEffect(() => {
+        if (meetingStartTime) {
+            const interval = setInterval(() => {
+                let diff = Math.floor((Date.now() - meetingStartTime) / 1000);
+                let m = String(Math.floor(diff / 60)).padStart(2, '0');
+                let s = String(diff % 60).padStart(2, '0');
+                setMeetingDuration(`${m}:${s}`);
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [meetingStartTime]);
 
     const getPermissions = async () => {
         try {
@@ -168,7 +206,10 @@ export default function VideoMeetComponent() {
 
     let getUserMedia = () => {
         if ((video && videoAvailable) || (audio && audioAvailable)) {
-            navigator.mediaDevices.getUserMedia({ video: video, audio: audio })
+            let constraints = { video: video, audio: audio };
+            if (selectedVideoDevice && video) constraints.video = { deviceId: { exact: selectedVideoDevice } };
+            if (selectedAudioDevice && audio) constraints.audio = { deviceId: { exact: selectedAudioDevice } };
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(getUserMediaSuccess)
                 .catch((e) => console.log(e))
         } else {
@@ -540,8 +581,19 @@ export default function VideoMeetComponent() {
         }
     };
 
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => console.log(err));
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+        }
+    };
+
     let connect = () => {
         setAskForUsername(false);
+        setMeetingStartTime(Date.now());
         getMedia();
     };
 
@@ -565,6 +617,12 @@ export default function VideoMeetComponent() {
                 </div> 
             ) : (
                 <div className={styles.meetVideoContainer}>
+                    {/* Meeting Timer Overlay */}
+                    <div className={styles.meetingTimer}>
+                        <span style={{color: '#ff3b3b', marginRight: '8px'}}>●</span> 
+                        {meetingDuration}
+                    </div>
+
                     {/* Render Flying Emojis */}
                     {flyingEmojis.map(item => (
                         <div key={item.id} className={styles.flyingEmoji} style={{left: `${item.left}%`}}>
@@ -586,7 +644,10 @@ export default function VideoMeetComponent() {
                             <div className={styles.videoGrid}>
                                 <div className={`${styles.videoWrapper} ${handRaisedUsers.has(socketIdRef.current) ? styles.handRaised : ""}`}>
                                     <video ref={localVideoref} autoPlay muted></video>
-                                    <div className={styles.videoOverlay}>{username} (You)</div>
+                                    <div className={styles.videoOverlay}>
+                                        <SignalCellularAltIcon style={{fontSize: '16px', color: '#00cc66'}} />
+                                        {username} (You)
+                                    </div>
                                 </div>
 
                                 {videos.map((vid) => (
@@ -596,7 +657,10 @@ export default function VideoMeetComponent() {
                                             ref={ref => { if (ref && vid.stream) ref.srcObject = vid.stream; }}
                                             autoPlay
                                         ></video>
-                                        <div className={styles.videoOverlay}>Participant</div>
+                                        <div className={styles.videoOverlay}>
+                                            <SignalCellularAltIcon style={{fontSize: '16px', color: '#00cc66'}} />
+                                            Participant
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -652,6 +716,29 @@ export default function VideoMeetComponent() {
                                                 value={personalNotes}
                                                 onChange={(e) => setPersonalNotes(e.target.value)}
                                             ></textarea>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {sidebarTab === "settings" && (
+                                    <div className={styles.chatContainer}>
+                                        <div className={styles.sidebarHeader}>
+                                            <span>Device Settings</span>
+                                            <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
+                                        </div>
+                                        <div style={{padding: '20px'}}>
+                                            <label className={styles.settingsLabel}>Camera Output</label>
+                                            <select className={styles.deviceSelect} value={selectedVideoDevice} onChange={(e) => { setSelectedVideoDevice(e.target.value); getMedia(); }}>
+                                                {videoDevices.map(device => (
+                                                    <option key={device.deviceId} value={device.deviceId}>{device.label || `Camera ${device.deviceId.substring(0,5)}`}</option>
+                                                ))}
+                                            </select>
+                                            <label className={styles.settingsLabel}>Microphone Input</label>
+                                            <select className={styles.deviceSelect} value={selectedAudioDevice} onChange={(e) => { setSelectedAudioDevice(e.target.value); getMedia(); }}>
+                                                {audioDevices.map(device => (
+                                                    <option key={device.deviceId} value={device.deviceId}>{device.label || `Microphone ${device.deviceId.substring(0,5)}`}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
                                 )}
@@ -756,9 +843,19 @@ export default function VideoMeetComponent() {
 
                             <button className={styles.toolButtonWrapper} onClick={toggleChat}>
                                 <Badge badgeContent={newMessages} max={99} color='error'>
-                                    <ChatIcon style={{ color: sidebarTab === "chat" ? "#0b5cff" : "#fff" }} />
+                                    <ChatIcon style={{ color: sidebarTab === "chat" ? "#0066ff" : "#fff" }} />
                                 </Badge>
                                 <p>Chat</p>
+                            </button>
+                            
+                            <button className={styles.toolButtonWrapper} onClick={toggleFullscreen}>
+                                {isFullscreen ? <FullscreenExitIcon style={{ color: "#fff" }} /> : <FullscreenIcon style={{ color: "#fff" }} />}
+                                <p>Fullscreen</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "settings" ? "closed" : "settings")}>
+                                <SettingsIcon style={{ color: sidebarTab === "settings" ? "#0066ff" : "#fff" }} />
+                                <p>Settings</p>
                             </button>
                         </div>
 

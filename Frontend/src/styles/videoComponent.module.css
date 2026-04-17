@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* Main Container */
 .meetVideoContainer {
     position: relative;
     height: 100vh;
     width: 100vw;
-    background: radial-gradient(circle at center, #111111 0%, #050505 100%);
+    background: #0d0d0d;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: #fff;
 }
 
@@ -18,11 +18,11 @@
     display: flex;
     flex: 1;
     width: 100%;
-    height: calc(100vh - 100px); /* Leave room for floating bottom bar */
+    height: calc(100vh - 90px); 
     overflow: hidden;
-    padding: 20px;
+    padding: 16px;
     box-sizing: border-box;
-    gap: 20px;
+    gap: 16px;
 }
 
 /* Video Grid Wrapper */
@@ -33,19 +33,19 @@
     justify-content: center;
     height: 100%;
     position: relative;
-    background: rgba(255,255,255,0.02);
-    border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.05);
+    background: #141414;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
     overflow: hidden;
 }
 
 /* Inner Grid */
 .videoGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+    gap: 16px;
     width: 100%;
-    padding: 20px;
+    padding: 16px;
     box-sizing: border-box;
     max-height: 100%;
     overflow-y: auto;
@@ -54,25 +54,18 @@
 /* Video Item Container */
 .videoWrapper {
     position: relative;
-    border-radius: 20px;
+    border-radius: 8px;
     overflow: hidden;
-    background: #000;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    background: #1e1e1e;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     aspect-ratio: 16 / 9;
     width: 100%;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.videoWrapper:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 50px rgba(11, 92, 255, 0.2);
-    border-color: rgba(11, 92, 255, 0.5);
+    transition: all 0.2s ease;
+    border: 1px solid #333;
 }
 
 .videoWrapper.handRaised {
-    border: 3px solid #fbbc05;
-    box-shadow: 0 0 30px rgba(251, 188, 5, 0.4);
+    border: 3px solid #ffaa00;
 }
 
 .videoWrapper video {
@@ -82,46 +75,47 @@
     background: #000;
 }
 
-/* Overlay for Local User or Name (optional) */
+/* Overlay for Local User or Name / Network */
 .videoOverlay {
     position: absolute;
-    bottom: 15px;
-    left: 15px;
-    background: rgba(0, 0, 0, 0.5);
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.6);
     color: white;
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Floating Bottom Toolbar (Mac style) */
+/* Floating Bottom Toolbar (Enterprise Dock) */
 .buttonContainers {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 24px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px 20px;
-    gap: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    padding: 8px 16px;
+    gap: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     z-index: 100;
 }
 
-/* Left, Center, Right Tool Groups */
+/* Tool Groups */
 .toolbarGroup {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
 }
 
 /* Individual Tool Button with Label */
@@ -133,108 +127,103 @@
     background: transparent;
     border: none;
     outline: none;
-    border-radius: 16px;
-    padding: 12px;
-    min-width: 70px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    color: white;
+    border-radius: 6px;
+    padding: 10px 14px;
+    min-width: 65px;
+    transition: background 0.1s ease;
+    color: #e0e0e0;
 }
 
 .toolButtonWrapper:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
+    background: #2a2a2a;
 }
 
 .toolButtonWrapper p {
-    margin: 8px 0 0 0;
+    margin: 6px 0 0 0;
     font-size: 11px;
-    font-weight: 600;
-    color: #ccc;
+    font-weight: 500;
+    color: #a0a0a0;
 }
 
 .toolButtonWrapper svg {
-    font-size: 26px !important;
+    font-size: 22px !important;
 }
 
 /* Emoji popup container */
 .emojiMenu {
     position: absolute;
     bottom: 100%;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 16px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
     padding: 10px;
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     z-index: 200;
 }
 
 .emojiSelect {
     font-size: 24px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.1s;
 }
 
 .emojiSelect:hover {
-    transform: scale(1.3);
+    transform: scale(1.2);
 }
 
 /* Specific red style for Leave Meeting */
 .leaveButton {
-    background: #ff3b3b;
-    border-radius: 16px;
-    padding: 12px 24px;
+    background: #d32f2f;
+    border-radius: 6px;
+    padding: 10px 20px;
     color: white;
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 13px;
     border: none;
     cursor: pointer;
     outline: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background 0.15s;
     display: flex;
     align-items: center;
-    box-shadow: 0 10px 20px rgba(255, 59, 59, 0.3);
 }
 
 .leaveButton:hover {
-    background: #ff1f1f;
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(255, 59, 59, 0.5);
+    background: #b71c1c;
 }
 
-/* Sidebars (Chat & Notes) */
+/* Sidebars (Chat & Notes & Settings) */
 .sidebar {
-    width: 360px;
+    width: 340px;
     height: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 24px;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     z-index: 150;
     overflow: hidden;
 }
 
 .sidebarHeader {
-    padding: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-weight: 700;
-    font-size: 18px;
+    padding: 16px;
+    border-bottom: 1px solid #2a2a2a;
+    font-weight: 600;
+    font-size: 16px;
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #1a1a1a;
 }
 
 .closeIcon {
     cursor: pointer;
-    color: #aaa;
-    transition: color 0.3s;
+    color: #888;
+    transition: color 0.2s;
 }
 .closeIcon:hover {
     color: #fff;
@@ -250,37 +239,38 @@
 .chattingDisplay {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 16px;
 }
 
 .chatMessage {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .chatMessage .sender {
     font-weight: 600;
-    font-size: 13px;
-    color: #0b5cff;
-    margin: 0 0 6px 0;
+    font-size: 12px;
+    color: #0066ff;
+    margin: 0 0 4px 0;
 }
 
 .chatMessage .text {
     margin: 0;
-    background: rgba(255,255,255,0.1);
-    padding: 12px 16px;
-    border-radius: 12px;
+    background: #1e1e1e;
+    padding: 10px 14px;
+    border-radius: 8px;
     border-top-left-radius: 0;
-    font-size: 14px;
-    color: #eee;
+    font-size: 13px;
+    color: #e0e0e0;
     word-break: break-word;
+    border: 1px solid #333;
 }
 
 .chattingArea {
-    padding: 20px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 16px;
+    border-top: 1px solid #2a2a2a;
     display: flex;
-    gap: 10px;
-    background: rgba(0,0,0,0.2);
+    gap: 8px;
+    background: #1a1a1a;
 }
 
 .chattingArea input {
@@ -291,7 +281,7 @@
 /* Notes Area */
 .notesArea {
     flex: 1;
-    padding: 20px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
 }
@@ -300,38 +290,60 @@
     flex: 1;
     width: 100%;
     resize: none;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: white;
-    border-radius: 16px;
-    padding: 20px;
-    font-size: 15px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
     outline: none;
     font-family: inherit;
     box-sizing: border-box;
-    transition: all 0.3s;
 }
 
 .notesArea textarea:focus {
-    border-color: #0b5cff;
-    box-shadow: 0 0 20px rgba(11, 92, 255, 0.2);
+    border-color: #0066ff;
 }
 
-/* Add floating emoji animation */
+/* Floating Emoji Animation */
 .flyingEmoji {
     position: absolute;
     bottom: -50px;
-    font-size: 3rem;
+    font-size: 2.5rem;
     animation: floatUp 3s ease-in forwards;
     pointer-events: none;
     z-index: 50;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
 }
 
 @keyframes floatUp {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    0% { transform: translateY(0); opacity: 1; }
     50% { opacity: 1; }
-    100% { transform: translateY(-800px) rotate(45deg); opacity: 0; }
+    100% { transform: translateY(-800px); opacity: 0; }
+}
+
+/* Device Settings Modal Options */
+.deviceSelect {
+    width: 100%;
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    outline: none;
+}
+
+.deviceSelect:focus {
+    border-color: #0066ff;
+}
+
+.settingsLabel {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a0a0a0;
+    margin-bottom: 6px;
 }
 
 /* Setup Screen */
@@ -341,20 +353,37 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: radial-gradient(circle at top right, #1e3a8a 0%, #050505 100%);
+    background: #0d0d0d;
     color: white;
     padding: 20px;
 }
 
 .setupVideo {
     width: 100%;
-    max-width: 700px;
-    border-radius: 24px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-    margin: 30px 0;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    margin: 20px 0;
     background: #000;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid #333;
     overflow: hidden;
+}
+
+/* Meeting Timer */
+.meetingTimer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e0e0e0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    letter-spacing: 1px;
 }
 
 /* Mobile Responsiveness */
@@ -371,10 +400,10 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        border-radius: 24px 24px 0 0;
+        border-radius: 12px 12px 0 0;
         border-left: none;
         z-index: 200;
-        box-shadow: 0 -15px 40px rgba(0,0,0,0.8);
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
     }
     .buttonContainers {
         width: 95%;
@@ -382,7 +411,7 @@
         justify-content: flex-start;
         padding: 10px;
         bottom: 10px;
-        border-radius: 18px;
+        border-radius: 12px;
     }
     .buttonContainers::-webkit-scrollbar {
         height: 4px;
@@ -392,22 +421,21 @@
         border-radius: 4px;
     }
     .toolbarGroup {
-        gap: 5px;
+        gap: 2px;
     }
     .toolButtonWrapper {
-        min-width: 60px;
+        min-width: 55px;
         padding: 8px;
     }
     .toolButtonWrapper svg {
-        font-size: 22px !important;
+        font-size: 20px !important;
     }
     .toolButtonWrapper p {
         font-size: 9px;
     }
     .leaveButton {
-        padding: 10px 16px;
-        font-size: 13px;
-        white-space: nowrap;
+        padding: 10px 14px;
+        font-size: 12px;
     }
     .videoGrid {
         grid-template-columns: 1fr;
@@ -415,5 +443,10 @@
     }
     .emojiMenu {
         bottom: 120%;
+    }
+    .meetingTimer {
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
     }
 }
