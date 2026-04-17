@@ -135,7 +135,12 @@ export default function VideoMeetComponent() {
     const [aiLanguage, setAiLanguage] = useState("en-US"); // en-US, hi-IN, es-ES, fr-FR
     const languageNames = { "en-US": "English", "hi-IN": "Hindi", "es-ES": "Spanish", "fr-FR": "French" };
     const [performanceMode, setPerformanceMode] = useState(false);
-    const frameCounter = useRef(0);
+    // Startup Engagement Features (Phase 11)
+    const [polls, setPolls] = useState([]);
+    const [activePoll, setActivePoll] = useState(null);
+    const [sharedNotes, setSharedNotes] = useState("");
+    const [activeSpeaker, setActiveSpeaker] = useState(null);
+    const [totalReactions, setTotalReactions] = useState(0);
     const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
@@ -149,6 +154,41 @@ export default function VideoMeetComponent() {
         
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const audioContextRef = useRef(null);
+    const analyzerRef = useRef(null);
+    const dataArrayRef = useRef(null);
+
+    useEffect(() => {
+        if (window.localStream && !audioContextRef.current) {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const source = context.createMediaStreamSource(window.localStream);
+            const analyzer = context.createAnalyser();
+            analyzer.fftSize = 256;
+            source.connect(analyzer);
+            audioContextRef.current = context;
+            analyzerRef.current = analyzer;
+            dataArrayRef.current = new Uint8Array(analyzer.frequencyBinCount);
+
+            const checkVolume = () => {
+                if (analyzerRef.current) {
+                    analyzerRef.current.getByteFrequencyData(dataArrayRef.current);
+                    let sum = 0;
+                    for(let i=0; i<dataArrayRef.current.length; i++) sum += dataArrayRef.current[i];
+                    let volume = sum / dataArrayRef.current.length;
+                    
+                    if (volume > 40) { // Threshold for "Talking"
+                        setActiveSpeaker("Me");
+                        socketRef.current.emit("active-speaker", "Me");
+                    } else if (activeSpeaker === "Me") {
+                        setActiveSpeaker(null);
+                    }
+                }
+                requestAnimationFrame(checkVolume);
+            };
+            checkVolume();
+        }
+    }, [window.localStream]);
 
     const fetchDevices = async () => {
         try {
@@ -371,9 +411,37 @@ export default function VideoMeetComponent() {
                 }
             })
 
-            socketRef.current.on('user-left', (id) => {
-                setVideos((videos) => videos.filter((video) => video.socketId !== id))
-            })
+            socketRef.current.on("meeting-poll", (pollData) => {
+                setPolls(prev => [...prev, pollData]);
+                setActivePoll(pollData);
+            });
+
+            socketRef.current.on("poll-vote", (data) => {
+                setPolls(prev => prev.map(p => {
+                    if (p.id === data.pollId) {
+                        const newOptions = [...p.options];
+                        newOptions[data.optionIndex].votes += 1;
+                        return { ...p, options: newOptions };
+                    }
+                    return p;
+                }));
+            });
+
+            socketRef.current.on("active-speaker", (data, fromId) => {
+                setActiveSpeaker(fromId);
+                // Clear after 2 seconds of silence
+                setTimeout(() => {
+                    setActiveSpeaker(prev => prev === fromId ? null : prev);
+                }, 2000);
+            });
+
+            socketRef.current.on("shared-notes", (notes) => {
+                setSharedNotes(notes);
+            });
+
+            socketRef.current.on("user-left", (id) => {
+                setVideos((prev) => prev.filter((video) => video.id !== id));
+            });
 
             socketRef.current.on('user-joined', (id, clients) => {
                 clients.forEach((socketListId) => {
@@ -668,6 +736,8 @@ export default function VideoMeetComponent() {
         socketRef.current.emit("whiteboard-draw", { x: offsetX, y: offsetY, type: "draw" });
     };
 
+    const stopDrawing = () => setIsDrawing(false);
+
     const clearWhiteboard = () => {
         const ctx = canvasRef.current.getContext("2d");
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -758,6 +828,36 @@ export default function VideoMeetComponent() {
         }, 1500);
     };
 
+    const createPoll = (question, options) => {
+        const pollData = {
+            id: Date.now(),
+            creator: "Me",
+            question,
+            options: options.map(o => ({ text: o, votes: 0 })),
+            active: true
+        };
+        socketRef.current.emit("meeting-poll", pollData);
+        setPolls(prev => [...prev, pollData]);
+        setActivePoll(pollData);
+    };
+
+    const voteOnPoll = (pollId, optionIndex) => {
+        socketRef.current.emit("poll-vote", { pollId, optionIndex });
+        setPolls(prev => prev.map(p => {
+            if (p.id === pollId) {
+                const newOptions = [...p.options];
+                newOptions[optionIndex].votes += 1;
+                return { ...p, options: newOptions };
+            }
+            return p;
+        }));
+    };
+
+    const updateSharedNotes = (notes) => {
+        setSharedNotes(notes);
+        socketRef.current.emit("shared-notes", notes);
+    };
+
     const generateMeetingSummary = async () => {
         if (meetingTranscript.length === 0) return alert("Transcript is empty. Turn on captions to record the meeting.");
         setIsAiThinking(true);
@@ -769,6 +869,9 @@ export default function VideoMeetComponent() {
             setIsAiThinking(false);
         }, 2000);
     };
+
+    const handleVideoEffect = (effect) => setActiveEffect(effect);
+    const toggleVoiceEnhance = () => setIsVoiceEnhanced(!isVoiceEnhanced);
 
     let connect = () => {
         setAskForUsername(false);
@@ -821,10 +924,10 @@ export default function VideoMeetComponent() {
                             )}
 
                             <div className={styles.videoGrid}>
-                                <div className={`${styles.videoWrapper} ${handRaisedUsers.has(socketIdRef.current) ? styles.handRaised : ""}`}>
+                                <div className={`${styles.videoWrapper} ${activeSpeaker === "Me" ? "activeSpeaker" : ""} ${handRaisedUsers.has(socketIdRef.current) ? styles.handRaised : ""}`}>
                                     <video ref={localVideoref} autoPlay muted></video>
                                     <div className={styles.videoOverlay}>
-                                        <span>{askForUsername} (You)</span>
+                                        <span>{username} (You)</span>
                                         <SignalCellularAltIcon style={{fontSize: '14px', color: '#4caf50'}} />
                                     </div>
                                     
@@ -854,7 +957,7 @@ export default function VideoMeetComponent() {
                                 </div>
 
                                 {videos.map((vid) => (
-                                    <div key={vid.socketId} className={`${styles.videoWrapper} ${handRaisedUsers.has(vid.socketId) ? styles.handRaised : ""}`}>
+                                    <div key={vid.socketId} className={`${styles.videoWrapper} ${activeSpeaker === vid.socketId ? "activeSpeaker" : ""} ${handRaisedUsers.has(vid.socketId) ? styles.handRaised : ""}`}>
                                         <video
                                             data-socket={vid.socketId}
                                             ref={ref => { if (ref && vid.stream) ref.srcObject = vid.stream; }}
@@ -907,18 +1010,66 @@ export default function VideoMeetComponent() {
                                 {sidebarTab === "notes" && (
                                     <div className={styles.chatContainer}>
                                         <div className={styles.sidebarHeader}>
-                                            <span>My Notes</span>
-                                            <div>
-                                                <Button size="small" color="error" onClick={clearNotes}>Clear All</Button>
-                                                <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                                <DescriptionIcon style={{color: '#00d2ff'}} />
+                                                <span>Shared Notepad</span>
                                             </div>
+                                            <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
                                         </div>
-                                        <div className={styles.notesArea}>
+                                        <div style={{padding: '20px', flex: 1, display: 'flex'}}>
                                             <textarea 
-                                                placeholder="Type your personal meeting notes here (saved locally for this session)..."
-                                                value={personalNotes}
-                                                onChange={(e) => setPersonalNotes(e.target.value)}
-                                            ></textarea>
+                                                className={styles.notesArea}
+                                                placeholder="Take joint notes here... (Synced in real-time)"
+                                                value={sharedNotes}
+                                                onChange={(e) => updateSharedNotes(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {sidebarTab === "polls" && (
+                                    <div className={styles.chatContainer}>
+                                        <div className={styles.sidebarHeader}>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                                <BarChartIcon style={{color: '#00d2ff'}} />
+                                                <span>AeroPolls</span>
+                                            </div>
+                                            <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
+                                        </div>
+                                        <div className={styles.chattingDisplay} style={{padding: '20px'}}>
+                                            {polls.length === 0 ? (
+                                                <div style={{textAlign: 'center', color: '#94a3b8', marginTop: '40px'}}>
+                                                    <p>No active polls.</p>
+                                                    <Button 
+                                                        variant="contained" 
+                                                        onClick={() => createPoll("What feature should we scale next?", ["Mobile App", "AI Real-time Translation", "Virtual VR Office"])}
+                                                        style={{marginTop: '20px', borderRadius: '12px', background: 'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)', border: 'none'}}
+                                                    >
+                                                        Create Sample Poll
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                polls.map(poll => (
+                                                    <div key={poll.id} className={styles.pollCard}>
+                                                        <h4>{poll.question}</h4>
+                                                        <div style={{marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                                                            {poll.options.map((opt, i) => {
+                                                                const totalVotes = poll.options.reduce((a, b) => a + b.votes, 0);
+                                                                const percent = totalVotes > 0 ? (opt.votes / totalVotes * 100) : 0;
+                                                                return (
+                                                                    <div key={i} className={styles.pollOption} onClick={() => voteOnPoll(poll.id, i)}>
+                                                                        <div className={styles.pollProgress} style={{width: `${percent}%`}}></div>
+                                                                        <div className={styles.pollText}>
+                                                                            <span>{opt.text}</span>
+                                                                            <span>{opt.votes} v</span>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -1116,16 +1267,6 @@ export default function VideoMeetComponent() {
                                 <p>Notes</p>
                             </button>
 
-                            <button className={styles.toolButtonWrapper} onClick={() => setWhiteboardActive(!whiteboardActive)}>
-                                <CreateIcon style={{ color: whiteboardActive ? "#00d2ff" : "#fff" }} />
-                                <p>Board</p>
-                            </button>
-
-                            <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "ai" ? "closed" : "ai")}>
-                                <SmartToyIcon style={{ color: sidebarTab === "ai" ? "#00d2ff" : "#fff" }} />
-                                <p>AeroAI</p>
-                            </button>
-
                             <button className={styles.toolButtonWrapper} onClick={toggleTheme}>
                                 {theme === "dark" ? <LightModeIcon style={{ color: "#fff" }} /> : <DarkModeIcon style={{ color: "#000" }} />}
                                 <p>{theme === "dark" ? "Light" : "Dark"}</p>
@@ -1145,19 +1286,26 @@ export default function VideoMeetComponent() {
                                 <GraphicEqIcon style={{ color: isVoiceEnhanced ? "#00d2ff" : "#fff" }} />
                                 <p>Voice+</p>
                             </button>
-
-                            <button className={styles.toolButtonWrapper} onClick={toggleChat}>
-                                <Badge badgeContent={newMessages} max={99} color='error'>
-                                    <ChatIcon style={{ color: sidebarTab === "chat" ? "#0066ff" : "#fff" }} />
-                                </Badge>
-                                <p>Chat</p>
-                            </button>
                             
                             <button className={styles.toolButtonWrapper} onClick={toggleFullscreen}>
                                 {isFullscreen ? <FullscreenExitIcon style={{ color: "#fff" }} /> : <FullscreenIcon style={{ color: "#fff" }} />}
                                 <p>Fullscreen</p>
                             </button>
 
+                            <IconButton onClick={() => setSidebarTab(sidebarTab === "chat" ? "closed" : "chat")} style={{color: sidebarTab === "chat" ? '#00d2ff' : '#fff'}}>
+                                <Badge badgeContent={messages.length} color="primary">
+                                    <ChatIcon />
+                                </Badge>
+                            </IconButton>
+                            <IconButton onClick={() => setSidebarTab(sidebarTab === "polls" ? "closed" : "polls")} style={{color: sidebarTab === "polls" ? '#00d2ff' : '#fff'}}>
+                                <BarChartIcon />
+                            </IconButton>
+                            <IconButton onClick={() => setSidebarTab(sidebarTab === "notes" ? "closed" : "notes")} style={{color: sidebarTab === "notes" ? '#00d2ff' : '#fff'}}>
+                                <DescriptionIcon />
+                            </IconButton>
+                            <IconButton onClick={() => setSidebarTab(sidebarTab === "ai" ? "closed" : "ai")} style={{color: sidebarTab === "ai" ? '#00d2ff' : '#fff'}}>
+                                <AutoAwesomeIcon />
+                            </IconButton>
                             <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "settings" ? "closed" : "settings")}>
                                 <SettingsIcon style={{ color: sidebarTab === "settings" ? "#0066ff" : "#fff" }} />
                                 <p>Settings</p>

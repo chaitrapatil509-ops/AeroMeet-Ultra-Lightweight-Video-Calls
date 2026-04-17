@@ -120,6 +120,58 @@ export const connectToSocket = (server) => {
             }
         });
 
+        socket.on("active-speaker", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    if (elem !== socket.id) io.to(elem).emit("active-speaker", data, socket.id);
+                })
+            }
+        });
+
+        socket.on("meeting-poll", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    if (elem !== socket.id) io.to(elem).emit("meeting-poll", data);
+                })
+            }
+        });
+
+        socket.on("poll-vote", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    if (elem !== socket.id) io.to(elem).emit("poll-vote", data);
+                })
+            }
+        });
+
+        socket.on("shared-notes", (data) => {
+            const [matchingRoom, found] = Object.entries(connections).reduce(([room, isFound], [roomKey, roomValue]) => {
+                if (!isFound && roomValue.includes(socket.id)) return [roomKey, true];
+                return [room, isFound];
+            }, ['', false]);
+
+            if (found === true) {
+                connections[matchingRoom].forEach((elem) => {
+                    if (elem !== socket.id) io.to(elem).emit("shared-notes", data);
+                })
+            }
+        });
+
         socket.on("disconnect", () => {
 
             var diffTime = Math.abs(timeOnline[socket.id] - new Date())
