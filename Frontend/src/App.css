@@ -5,8 +5,8 @@
   --panel-bg: rgba(20, 20, 20, 0.7);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --accent-color: #0b5cff;
-  --accent-glow: rgba(11, 92, 255, 0.5);
+  --accent-color: #00d2ff;
+  --accent-glow: rgba(0, 210, 255, 0.4);
   --text-main: #ffffff;
   --text-muted: #94a3b8;
   --3d-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -121,10 +121,11 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #0b5cff 100%);
+  background: linear-gradient(135deg, #00d1ff 0%, #0072ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 
 .landingMainContainer p {
