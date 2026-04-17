@@ -28,7 +28,8 @@ export default function LandingPage() {
     return (
         <div className="landingPageContainer">
             <nav>
-                <div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+                    <img src="/logo.png" alt="AeroMeet 3D" style={{height: '40px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))'}} />
                     <h2>AeroMeet</h2>
                 </div>
                 <div className="navList">

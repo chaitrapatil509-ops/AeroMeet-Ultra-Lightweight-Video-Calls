@@ -21,8 +21,9 @@ function HomeComponent() {
     return (
         <div className="landingPageContainer" style={{minHeight: '100vh'}}>
             <div className="navBar">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <h2 style={{fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #ffffff, #0b5cff, #8a2be2)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shine 3s linear infinite'}}>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                    <img src="/logo.png" alt="AeroMeet 3D Logo" style={{height: '38px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))'}} />
+                    <h2 style={{fontWeight: 700, margin: 0, color: '#fff', letterSpacing: '-0.5px'}}>
                         AeroMeet
                     </h2>
                 </div>
