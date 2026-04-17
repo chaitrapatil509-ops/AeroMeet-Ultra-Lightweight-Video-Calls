@@ -36,6 +36,8 @@ import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import DownloadIcon from '@mui/icons-material/Download';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import CropSquareIcon from '@mui/icons-material/CropSquare';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -656,6 +658,9 @@ export default function VideoMeetComponent() {
         if (wbTool === "pen" || wbTool === "eraser") {
             ctx.lineTo(offsetX, offsetY);
             ctx.stroke();
+        } else if (wbTool === "rect" || wbTool === "circle") {
+            // Shapes can be complex for live syncing; for now we support pro pen & eraser
+            // In a full production app, we'd use a temporary overlay for shapes
         }
         
         socketRef.current.emit("whiteboard-draw", { x: offsetX, y: offsetY, type: "draw" });
@@ -822,6 +827,8 @@ export default function VideoMeetComponent() {
                                         <div className={styles.whiteboardOverlay}>
                                             <div className={styles.wbToolbox}>
                                                 <IconButton onClick={() => setWbTool("pen")} color={wbTool === "pen" ? "primary" : "default"}><CreateIcon /></IconButton>
+                                                <IconButton onClick={() => setWbTool("rect")} color={wbTool === "rect" ? "primary" : "default"}><CropSquareIcon /></IconButton>
+                                                <IconButton onClick={() => setWbTool("circle")} color={wbTool === "circle" ? "primary" : "default"}><RadioButtonUncheckedIcon /></IconButton>
                                                 <IconButton onClick={() => setWbTool("eraser")} color={wbTool === "eraser" ? "primary" : "default"}><AutoFixHighIcon /></IconButton>
                                                 <input type="color" value={wbColor} onChange={(e) => setWbColor(e.target.value)} className={styles.colorPicker} />
                                                 <IconButton onClick={clearWhiteboard}><DeleteSweepIcon /></IconButton>
