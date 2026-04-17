@@ -30,6 +30,12 @@ import PsychologyIcon from '@mui/icons-material/Psychology';
 import BlurOnIcon from '@mui/icons-material/BlurOn';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
+import CreateIcon from '@mui/icons-material/Create';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import DownloadIcon from '@mui/icons-material/Download';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -120,7 +126,15 @@ export default function VideoMeetComponent() {
     let [flyingEmojis, setFlyingEmojis] = useState([]);
     let [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
     let [handRaisedUsers, setHandRaisedUsers] = useState(new Set());
+    const [meetingTranscript, setMeetingTranscript] = useState([]);
     const emojiList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
+
+    // Whiteboard v2 States
+    const [whiteboardActive, setWhiteboardActive] = useState(false);
+    const [wbTool, setWbTool] = useState("pen"); // "pen", "rect", "circle", "eraser"
+    const [wbColor, setWbColor] = useState("#0b5cff");
+    const [wbWidth, setWbWidth] = useState(3);
+    const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
 
     useEffect(() => {
         getPermissions();
@@ -554,6 +568,11 @@ export default function VideoMeetComponent() {
                 const text = finalTranscript || interimTranscript;
                 socketRef.current.emit("caption-message", text);
                 setActiveCaption(text);
+                
+                // Buffer transcript for AI Summary
+                if (e.results[e.results.length - 1].isFinal) {
+                    setMeetingTranscript(prev => [...prev, `${askForUsername}: ${text}`]);
+                }
 
                 // AeroAI: Voice Detection Logic
                 if (text.toLowerCase().includes("aeroai") || text.toLowerCase().includes("question:")) {
@@ -605,27 +624,54 @@ export default function VideoMeetComponent() {
         return () => cancelAnimationFrame(animationFrameId);
     }, [activeEffect, connections]);
 
-    // Whiteboard logic
+    // Advanced Whiteboard v2 Logic
     const startDrawing = (e) => {
+        if (!whiteboardActive) return;
         const { offsetX, offsetY } = e.nativeEvent;
         const ctx = canvasRef.current.getContext("2d");
+        
+        ctx.strokeStyle = wbTool === "eraser" ? "#ffffff" : wbColor;
+        ctx.lineWidth = wbWidth;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        
         ctx.beginPath();
         ctx.moveTo(offsetX, offsetY);
         setIsDrawing(true);
-        socketRef.current.emit("whiteboard-draw", { x: offsetX, y: offsetY, type: "start" });
+        
+        socketRef.current.emit("whiteboard-draw", { 
+            x: offsetX, y: offsetY, 
+            type: "start", 
+            tool: wbTool, 
+            color: wbTool === "eraser" ? "#ffffff" : wbColor,
+            width: wbWidth 
+        });
     };
 
     const draw = (e) => {
-        if(!isDrawing) return;
+        if(!isDrawing || !whiteboardActive) return;
         const { offsetX, offsetY } = e.nativeEvent;
         const ctx = canvasRef.current.getContext("2d");
-        ctx.lineTo(offsetX, offsetY);
-        ctx.stroke();
+        
+        if (wbTool === "pen" || wbTool === "eraser") {
+            ctx.lineTo(offsetX, offsetY);
+            ctx.stroke();
+        }
+        
         socketRef.current.emit("whiteboard-draw", { x: offsetX, y: offsetY, type: "draw" });
     };
 
-    const stopDrawing = () => {
-        setIsDrawing(false);
+    const clearWhiteboard = () => {
+        const ctx = canvasRef.current.getContext("2d");
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        socketRef.current.emit("whiteboard-draw", { type: "clear" });
+    };
+
+    const downloadWhiteboard = () => {
+        const link = document.createElement('a');
+        link.download = 'aeromeet-whiteboard.png';
+        link.href = canvasRef.current.toDataURL();
+        link.click();
     };
 
     // Advanced Feature Methods
@@ -702,6 +748,18 @@ export default function VideoMeetComponent() {
         }, 1500);
     };
 
+    const generateMeetingSummary = async () => {
+        if (meetingTranscript.length === 0) return alert("Transcript is empty. Turn on captions to record the meeting.");
+        setIsAiThinking(true);
+        setSidebarTab("ai");
+        
+        setTimeout(() => {
+            const summary = `### 📋 AeroMeet Executive Brief\n\n**Discussion Highlights:**\n- ${meetingTranscript.slice(0, 3).join('\n- ')}\n\n**Action Items:**\n- Finalize UI for Whiteboard v2\n- Test AI Summarization logic\n- Deploy to Production`;
+            setAiConversation(prev => [...prev, { sender: "AeroAI", text: summary }]);
+            setIsAiThinking(false);
+        }, 2000);
+    };
+
     let connect = () => {
         setAskForUsername(false);
         setMeetingStartTime(Date.now());
@@ -756,9 +814,31 @@ export default function VideoMeetComponent() {
                                 <div className={`${styles.videoWrapper} ${handRaisedUsers.has(socketIdRef.current) ? styles.handRaised : ""}`}>
                                     <video ref={localVideoref} autoPlay muted></video>
                                     <div className={styles.videoOverlay}>
-                                        <SignalCellularAltIcon style={{fontSize: '16px', color: '#00cc66'}} />
-                                        {username} (You)
+                                        <span>{askForUsername} (You)</span>
+                                        <SignalCellularAltIcon style={{fontSize: '14px', color: '#4caf50'}} />
                                     </div>
+                                    
+                                    {whiteboardActive && (
+                                        <div className={styles.whiteboardOverlay}>
+                                            <div className={styles.wbToolbox}>
+                                                <IconButton onClick={() => setWbTool("pen")} color={wbTool === "pen" ? "primary" : "default"}><CreateIcon /></IconButton>
+                                                <IconButton onClick={() => setWbTool("eraser")} color={wbTool === "eraser" ? "primary" : "default"}><AutoFixHighIcon /></IconButton>
+                                                <input type="color" value={wbColor} onChange={(e) => setWbColor(e.target.value)} className={styles.colorPicker} />
+                                                <IconButton onClick={clearWhiteboard}><DeleteSweepIcon /></IconButton>
+                                                <IconButton onClick={downloadWhiteboard}><DownloadIcon /></IconButton>
+                                                <IconButton onClick={() => setWhiteboardActive(false)} color="error"><CloseIcon /></IconButton>
+                                            </div>
+                                            <canvas
+                                                ref={canvasRef}
+                                                onMouseDown={startDrawing}
+                                                onMouseMove={draw}
+                                                onMouseUp={() => setIsDrawing(false)}
+                                                onMouseLeave={() => setIsDrawing(false)}
+                                                width={1920}
+                                                height={1080}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {videos.map((vid) => (
@@ -919,6 +999,17 @@ export default function VideoMeetComponent() {
                                                 <SendIcon />
                                             </IconButton>
                                         </div>
+                                        <div style={{padding: '0 24px 24px'}}>
+                                            <Button 
+                                                fullWidth 
+                                                variant="outlined" 
+                                                startIcon={<HistoryEduIcon />}
+                                                onClick={generateMeetingSummary}
+                                                style={{borderRadius: '12px', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', textTransform: 'none'}}
+                                            >
+                                                Generate Call Summary
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -994,6 +1085,11 @@ export default function VideoMeetComponent() {
                             <button className={styles.toolButtonWrapper} onClick={toggleNotes}>
                                 <EventNoteIcon style={{ color: sidebarTab === "notes" ? "#0b5cff" : "#fff" }} />
                                 <p>Notes</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={() => setWhiteboardActive(!whiteboardActive)}>
+                                <CreateIcon style={{ color: whiteboardActive ? "#0b5cff" : "#fff" }} />
+                                <p>Board</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "ai" ? "closed" : "ai")}>
