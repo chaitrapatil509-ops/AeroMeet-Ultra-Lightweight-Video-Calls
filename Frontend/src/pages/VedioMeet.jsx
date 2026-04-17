@@ -149,7 +149,6 @@ export default function VideoMeetComponent() {
     const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
-    const frameCounter = useRef(0);
 
     useEffect(() => {
         getPermissions();
