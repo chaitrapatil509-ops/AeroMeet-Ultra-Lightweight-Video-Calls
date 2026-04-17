@@ -100,6 +100,7 @@ export default function VideoMeetComponent() {
     let [isDrawing, setIsDrawing] = useState(false);
     let [whiteboardActive, setWhiteboardActive] = useState(false);
     let [wbTool, setWbTool] = useState("pen");
+    const frameCounter = useRef(0);
 
     // Enterprise Features
     let [isFullscreen, setIsFullscreen] = useState(false);
