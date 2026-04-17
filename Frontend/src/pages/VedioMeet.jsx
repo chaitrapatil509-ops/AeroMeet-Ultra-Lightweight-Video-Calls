@@ -27,9 +27,13 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import PsychologyIcon from '@mui/icons-material/Psychology';
+import BlurOnIcon from '@mui/icons-material/BlurOn';
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import WallpaperIcon from '@mui/icons-material/Wallpaper';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
+import { AeroFXEngine } from '../utils/backgroundEffects';
 
 const server_url = server;
 
@@ -95,6 +99,14 @@ export default function VideoMeetComponent() {
     let [selectedVideoDevice, setSelectedVideoDevice] = useState("");
     let [selectedAudioDevice, setSelectedAudioDevice] = useState("");
 
+    // FX States
+    let [activeEffect, setActiveEffect] = useState("none"); // "none", "blur", "image"
+    let [isVoiceEnhanced, setIsVoiceEnhanced] = useState(false);
+    const fxEngine = useRef(null);
+    const audioCtx = useRef(null);
+    const audioSource = useRef(null);
+    const audioStreamOut = useRef(null);
+
     // AI Assistant States
     let [aiTabActive, setAiTabActive] = useState(false);
     let [aiInput, setAiInput] = useState("");
@@ -113,6 +125,10 @@ export default function VideoMeetComponent() {
     useEffect(() => {
         getPermissions();
         fetchDevices();
+        
+        // Initialize AeroFX
+        fxEngine.current = new AeroFXEngine();
+        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -550,6 +566,45 @@ export default function VideoMeetComponent() {
         }
     };
 
+    // Frame processing loop for Virtual effects
+    useEffect(() => {
+        let animationFrameId;
+        const process = async () => {
+            if (activeEffect !== "none" && localVideoref.current && fxEngine.current) {
+                fxEngine.current.isEnabled = true;
+                if (activeEffect === "blur") fxEngine.current.setEffect("blur", 10);
+                else if (activeEffect === "image") {
+                    const img = new Image();
+                    img.src = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80";
+                    fxEngine.current.setEffect("image", img);
+                }
+                
+                await fxEngine.current.processFrame(localVideoref.current);
+                
+                // Switch outgoing stream to filtered canvas stream
+                const fxStream = fxEngine.current.getStream();
+                const videoTrack = fxStream.getVideoTracks()[0];
+                for (let id in connections) {
+                    const sender = connections[id].getSenders().find(s => s.track.kind === 'video');
+                    if (sender) sender.replaceTrack(videoTrack);
+                }
+            } else if (fxEngine.current) {
+                fxEngine.current.isEnabled = false;
+                // Restore original video track
+                if (window.localStream) {
+                    const originalTrack = window.localStream.getVideoTracks()[0];
+                    for (let id in connections) {
+                        const sender = connections[id].getSenders().find(s => s.track.kind === 'video');
+                        if (sender) sender.replaceTrack(originalTrack);
+                    }
+                }
+            }
+            animationFrameId = requestAnimationFrame(process);
+        };
+        process();
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [activeEffect, connections]);
+
     // Whiteboard logic
     const startDrawing = (e) => {
         const { offsetX, offsetY } = e.nativeEvent;
@@ -949,6 +1004,21 @@ export default function VideoMeetComponent() {
                             <button className={styles.toolButtonWrapper} onClick={toggleTheme}>
                                 {theme === "dark" ? <LightModeIcon style={{ color: "#fff" }} /> : <DarkModeIcon style={{ color: "#000" }} />}
                                 <p>{theme === "dark" ? "Light" : "Dark"}</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={() => handleVideoEffect(activeEffect === "blur" ? "none" : "blur")}>
+                                <BlurOnIcon style={{ color: activeEffect === "blur" ? "#0b5cff" : "#fff" }} />
+                                <p>Blur</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={() => handleVideoEffect(activeEffect === "image" ? "none" : "image")}>
+                                <WallpaperIcon style={{ color: activeEffect === "image" ? "#0b5cff" : "#fff" }} />
+                                <p>BG</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={toggleVoiceEnhance}>
+                                <GraphicEqIcon style={{ color: isVoiceEnhanced ? "#0b5cff" : "#fff" }} />
+                                <p>Voice+</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleChat}>
