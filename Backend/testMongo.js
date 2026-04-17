@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 
-const uri = "mongodb://admin:admin123@ac-028gr3p-shard-00-00.qgn9nek.mongodb.net:27017,ac-028gr3p-shard-00-01.qgn9nek.mongodb.net:27017,ac-028gr3p-shard-00-02.qgn9nek.mongodb.net:27017/?ssl=true&replicaSet=atlas-dsv02p-shard-0&authSource=admin&appName=Cluster0";
+import "dotenv/config";
+const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri);
 

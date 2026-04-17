@@ -1,2 +1,24 @@
+# Dependencies
+node_modules
 Frontend/node_modules
 Backend/node_modules
+
+# Environment Variables
+.env
+Backend/.env
+Frontend/.env
+
+# Build outputs
+Frontend/build
+Frontend/.vercel
+.vercel
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+out.log
+
+# System
+.DS_Store
+Thumb.db
