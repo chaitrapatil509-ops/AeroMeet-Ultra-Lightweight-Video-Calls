@@ -23,7 +23,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import PsychologyIcon from '@mui/icons-material/Psychology';
@@ -31,7 +30,6 @@ import BlurOnIcon from '@mui/icons-material/BlurOn';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import CreateIcon from '@mui/icons-material/Create';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import DownloadIcon from '@mui/icons-material/Download';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
@@ -145,7 +143,6 @@ export default function VideoMeetComponent() {
     const [activePoll, setActivePoll] = useState(null);
     const [sharedNotes, setSharedNotes] = useState("");
     const [activeSpeaker, setActiveSpeaker] = useState(null);
-    const [totalReactions, setTotalReactions] = useState(0);
     const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
