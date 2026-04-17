@@ -1,46 +1,76 @@
-# LiveConnect — Full-Stack Video Conferencing App
+# ✈️ AeroMeet — The Next-Gen AI Video Conferencing Suite
 
-🚀 [Click here to use LiveConnect](https://liveconnectfrontend.onrender.com) (https://liveconnectfrontend.onrender.com) — Start your video meetings instantly!
+<p align="center">
+  <img src="Frontend/public/logo.png" width="150" alt="AeroMeet Logo">
+</p>
 
-**LiveConnect** is a **Zoom-inspired**, real-time video conferencing application built with the modern **MERN stack**, **WebRTC**, and **Socket.io**.  
-This project demonstrates my expertise in full-stack development, real-time communication, and scalable web applications.
+AeroMeet is an ultra-premium, enterprise-grade video conferencing platform built for the modern era. Transitioning from a standard MERN app, AeroMeet now features a **Gen-Z 3D Aesthetic**, **AeroAI Meeting Intelligence**, and **Real-Time Visual FX**.
 
----
-
-## 🚀 Key Highlights
-
-- **Real-Time Video & Audio Calls:** High-quality, low-latency video conferencing powered by WebRTC.  
-- **Screen Sharing:** Seamlessly share your screen for presentations and collaboration.  
-- **Interactive Chat:** In-call messaging to enhance communication during meetings.  
-- **User Authentication & Meeting Management:** Secure user sign-up/login, create or join meetings with unique room links.  
-- **Meeting History:** Persist meeting data using MongoDB for enhanced user experience.  
-- **Responsive UI:** Built with React and Material UI, designed for usability across devices.  
+## 🚀 Experience the Future
+**[Launch AeroMeet Pro](https://github.com/chaitrapatil509-ops/AeroMeet-Ultra-Lightweight-Video-Calls)**
 
 ---
 
-## 🛠️ Technologies & Skills Applied
+## 🔥 Key Highlights
 
-- **Frontend:** React.js, Material UI, CSS3 — Building dynamic, responsive user interfaces.  
-- **Backend:** Node.js, Express.js — RESTful APIs and server-side logic.  
-- **Real-Time Communication:** WebRTC, Socket.io — Implementing peer-to-peer media and bi-directional event-based messaging.  
-- **Database:** MongoDB, Mongoose — Data modeling and persistence for users and meetings.  
-- **Security:** Bcrypt for password hashing and JWT (optional) for authentication.  
-- **Version Control:** Git & GitHub — Collaborative development and code versioning.  
+### 🤖 AeroAI: Meeting Intelligence
+- **Voice-Activated Assistant:** Just say "AeroAI" to ask about meeting stats, duration, or participants.
+- **Executive Summaries:** One-click AI summarization that converts entire call transcripts into bulleted action items.
+- **Live Captions:** High-accuracy real-time transcription powered by the Web Speech API.
+
+### 🎭 Pro Visual & Audio FX
+- **Virtual Backgrounds:** AI-powered background blur and high-resolution office replacement using MediaPipe.
+- **Voice Enhancement:** Pro-grade audio processing (High-Pass Filter & Normalization) to remove background noise and fans.
+- **3D Glassmorphism UI:** A sleek, "Slate Pro" and "Studio White" design system featuring bubbly depths and vibrant gradients.
+
+### 👔 Executive Workspace
+- **Whiteboard v2:** Collaborative 3D drawing board with pen tools, shapes, and PNG export capabilities.
+- **Hardware Pro-Control:** Real-time camera and microphone switching without leaving the call.
+- **Meeting Duration & Quality:** Integrated network quality indicators and live meeting timers.
 
 ---
 
-## 💡 Why This Project?
+## 🛠️ The AeroMeet Stack
 
-- Demonstrates deep understanding of full-stack development with real-time features.  
-- Solves real-world problem of remote collaboration with video, chat, and screen sharing.  
-- Showcases ability to integrate complex technologies into a seamless user experience.  
+- **Frontend:** React.js, Material UI, MediaPipe (AI Vision), Web Audio API.
+- **Backend:** Node.js, Express.js (High-Performance Socket.io Architecture).
+- **Communication:** WebRTC (Peer-to-Peer Media), Socket.io (Signal Orchestration).
+- **Database:** MongoDB & Mongoose (Meeting Persistence & User Auth).
+- **Branding:** 100% Custom 3D Logo and Gen-Z Aesthetics.
+
+---
+
+## 💡 Why AeroMeet?
+
+AeroMeet isn't just a clone; it's a re-imagining of how humans should interact digitally. By combining **Intelligence**, **Privacy**, and **Aesthetics**, it solves the problem of "Zoom Fatigue" with an interface that feels alive and an AI that works for you.
 
 ---
 
 ## ⚙️ Installation & Usage
 
-1. **Clone the repo**
+1. **Clone the Suite**
+   ```bash
+   git clone https://github.com/chaitrapatil509-ops/AeroMeet-Ultra-Lightweight-Video-Calls.git
+   cd AeroMeet-Ultra-Lightweight-Video-Calls
+   ```
 
-```bash
-git clone https://github.com/Prajwalbadiger76/liveConnect--Full-Stack-Project.git
-cd liveConnect--Full-Stack-Project
+2. **Environment Setup**
+   Create a `.env` in both `Backend` and `Frontend`:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   PORT=8000
+   ```
+
+3. **Ignition**
+   ```bash
+   # Backend
+   cd Backend && npm install && npm start
+   
+   # Frontend
+   cd Frontend && npm install && npm start
+   ```
+
+---
+
+## 👤 Author
+Developed and rebranded to **AeroMeet** with a focus on cutting-edge AI and Premium UX.
