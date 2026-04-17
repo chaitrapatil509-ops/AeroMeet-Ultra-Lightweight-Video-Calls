@@ -23,6 +23,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import PsychologyIcon from '@mui/icons-material/Psychology';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -83,12 +87,22 @@ export default function VideoMeetComponent() {
 
     // Enterprise Features
     let [isFullscreen, setIsFullscreen] = useState(false);
+    let [theme, setTheme] = useState("dark");
     let [meetingStartTime, setMeetingStartTime] = useState(null);
     let [meetingDuration, setMeetingDuration] = useState("00:00");
     let [videoDevices, setVideoDevices] = useState([]);
     let [audioDevices, setAudioDevices] = useState([]);
     let [selectedVideoDevice, setSelectedVideoDevice] = useState("");
     let [selectedAudioDevice, setSelectedAudioDevice] = useState("");
+
+    // AI Assistant States
+    let [aiTabActive, setAiTabActive] = useState(false);
+    let [aiInput, setAiInput] = useState("");
+    let [isAiThinking, setIsAiThinking] = useState(false);
+    let [aiConversation, setAiConversation] = useState([{
+        sender: "AeroAI",
+        text: "Hi! I'm your AeroAI meeting assistant. I'm listening for 'AeroAI' or any questions. How can I help today?"
+    }]);
 
     // Advanced Features
     let [flyingEmojis, setFlyingEmojis] = useState([]);
@@ -524,6 +538,11 @@ export default function VideoMeetComponent() {
                 const text = finalTranscript || interimTranscript;
                 socketRef.current.emit("caption-message", text);
                 setActiveCaption(text);
+
+                // AeroAI: Voice Detection Logic
+                if (text.toLowerCase().includes("aeroai") || text.toLowerCase().includes("question:")) {
+                    processAIQuery(text);
+                }
             };
             recognition.start();
             recognitionRef.current = recognition;
@@ -589,6 +608,43 @@ export default function VideoMeetComponent() {
             document.exitFullscreen();
             setIsFullscreen(false);
         }
+    };
+
+    const toggleTheme = () => {
+        const newTheme = theme === "dark" ? "light" : "dark";
+        setTheme(newTheme);
+        document.documentElement.setAttribute("data-theme", newTheme);
+    };
+
+    const processAIQuery = async (query) => {
+        if (!query.trim()) return;
+        setIsAiThinking(true);
+        
+        // Add user query to conversation
+        const updatedConv = [...aiConversation, { sender: "You", text: query }];
+        setAiConversation(updatedConv);
+        setAiInput("");
+
+        // Simulation of AI intelligence for meeting context
+        setTimeout(() => {
+            let response = "I'm analyzing the meeting context... ";
+            const q = query.toLowerCase();
+            
+            if (q.includes("recording")) response = "Yes, you can record this meeting by clicking the 'Record' icon in the dock. Recordings are saved locally.";
+            else if (q.includes("who is here") || q.includes("participants")) response = `There are currently ${videos.length + 1} participants in the meet.`;
+            else if (q.includes("time") || q.includes("duration")) response = `This meeting has been active for ${meetingDuration}.`;
+            else if (q.includes("share screen")) response = "You can share your screen using the 'Share Screen' icon if you are on a desktop browser.";
+            else response = "That's an interesting question! As an AeroAI meeting assistant, I'm here to help with recording, device selection, and meeting stats. Try asking about duration or participants!";
+
+            setAiConversation(prev => [...prev, { sender: "AeroAI", text: response }]);
+            setIsAiThinking(false);
+
+            // Optional: Speak the answer back if it was a voice query
+            if (query.toLowerCase().includes("aeroai")) {
+                const speech = new SpeechSynthesisUtterance(response);
+                window.speechSynthesis.speak(speech);
+            }
+        }, 1500);
     };
 
     let connect = () => {
@@ -766,6 +822,50 @@ export default function VideoMeetComponent() {
                                         </div>
                                     </div>
                                 )}
+
+                                {sidebarTab === "ai" && (
+                                    <div className={styles.chatContainer}>
+                                        <div className={styles.sidebarHeader}>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                                <PsychologyIcon style={{color: '#0b5cff'}} />
+                                                <span>AeroAI Meeting Assistant</span>
+                                            </div>
+                                            <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
+                                        </div>
+                                        <div className={styles.chattingDisplay}>
+                                            {aiConversation.map((item, index) => (
+                                                <div className={styles.chatMessage} key={index} style={{alignSelf: item.sender === "You" ? 'flex-end' : 'flex-start'}}>
+                                                    <p className={styles.sender} style={{color: item.sender === "AeroAI" ? '#0b5cff' : '#94a3b8'}}>
+                                                        {item.sender === "AeroAI" ? "AeroAI Helper" : "You (Voice/Text)"}
+                                                    </p>
+                                                    <p className={styles.text} style={{background: item.sender === "AeroAI" ? 'rgba(11, 92, 255, 0.1)' : 'rgba(255,255,255,0.05)', border: item.sender === "AeroAI" ? '1px solid rgba(11, 92, 255, 0.2)' : '1px solid rgba(255,255,255,0.05)'}}>
+                                                        {item.text}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                            {isAiThinking && (
+                                                <div className={styles.chatMessage}>
+                                                    <p className={styles.sender} style={{color: '#0b5cff'}}>AeroAI Helper</p>
+                                                    <p className={styles.text}>Thinking...</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className={styles.chattingArea}>
+                                            <TextField 
+                                                fullWidth
+                                                value={aiInput} 
+                                                onChange={(e) => setAiInput(e.target.value)} 
+                                                onKeyDown={(e) => { if(e.key === 'Enter') processAIQuery(aiInput); }}
+                                                placeholder="Ask AeroAI about the meeting..." 
+                                                variant="outlined" 
+                                                size="small"
+                                            />
+                                            <IconButton onClick={() => processAIQuery(aiInput)} color="primary" style={{ background: '#0b5cff', color: 'white', borderRadius: '8px' }}>
+                                                <SendIcon />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -839,6 +939,16 @@ export default function VideoMeetComponent() {
                             <button className={styles.toolButtonWrapper} onClick={toggleNotes}>
                                 <EventNoteIcon style={{ color: sidebarTab === "notes" ? "#0b5cff" : "#fff" }} />
                                 <p>Notes</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "ai" ? "closed" : "ai")}>
+                                <SmartToyIcon style={{ color: sidebarTab === "ai" ? "#0b5cff" : "#fff" }} />
+                                <p>AeroAI</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={toggleTheme}>
+                                {theme === "dark" ? <LightModeIcon style={{ color: "#fff" }} /> : <DarkModeIcon style={{ color: "#000" }} />}
+                                <p>{theme === "dark" ? "Light" : "Dark"}</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleChat}>
