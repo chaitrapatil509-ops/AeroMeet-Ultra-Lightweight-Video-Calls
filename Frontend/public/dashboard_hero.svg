@@ -1,0 +1,23 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#3a7bd5;stop-opacity:0.05" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Panel -->
+  <rect x="50" y="50" width="700" height="400" rx="30" fill="url(#g1)" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+  
+  <!-- Content Blocks (Floating UI) -->
+  <rect x="100" y="100" width="400" height="250" rx="20" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" transform="perspective(500) rotateY(-15) translateZ(10)" />
+  <circle cx="580" cy="180" r="40" fill="#00d2ff" opacity="0.4" filter="url(#glow)" />
+  <rect x="530" y="250" width="150" height="60" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+  
+  <!-- Digital Lines -->
+  <line x1="150" y1="150" x2="350" y2="150" stroke="white" stroke-width="4" opacity="0.3" rx="2" />
+  <line x1="150" y1="180" x2="300" y2="180" stroke="#00d2ff" stroke-width="4" opacity="0.6" rx="2" />
+</svg>

@@ -63,8 +63,9 @@ export default function LandingPage() {
 
                 <div className="heroImageSection">
                     <img 
-                        src="/mobile.png" 
-                        alt="Product Showcase" 
+                        src="/dashboard_hero.svg" 
+                        alt="AeroMeet Dashboard" 
+                        style={{ height: 'auto', width: '100%', maxWidth: '800px', filter: 'drop-shadow(0 30px 60px rgba(0,210,255,0.2))' }}
                     />
                 </div>
             </div>

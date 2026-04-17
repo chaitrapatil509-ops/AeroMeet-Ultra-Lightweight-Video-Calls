@@ -309,15 +309,79 @@ input:focus {
     box-shadow: 0 0 20px var(--accent-glow) !important;
 }
 
-/* Mobile Responsiveness */
-@media screen and (max-width: 900px) {
+/* Advanced Responsiveness Suite */
+
+@media screen and (max-width: 1200px) {
+  .landingMainContainer h1 { font-size: 3.8rem; }
+}
+
+@media screen and (max-width: 1024px) {
   .landingMainContainer {
     flex-direction: column;
-    padding: 2rem;
+    padding: 120px 2rem 60px;
     text-align: center;
+    gap: 3rem;
   }
-  .landingMainContainer h1 { font-size: 3rem; letter-spacing: -1px; }
-  .navList { display: none; }
-  .landingPageContainer nav { padding: 1rem 2rem; }
-  .getStartedBtn { width: 100%; }
+  .landingMainContainer h1 { font-size: 3.2rem; letter-spacing: -1.5px; }
+  .landingMainContainer p { margin: 0 auto 2.5rem; }
+  .heroImageSection img { height: 45vh; }
+  .dashboardCard { padding: 4rem 2rem; }
+}
+
+@media screen and (max-width: 768px) {
+  .landingPageContainer nav { padding: 1.2rem 1.5rem; }
+  .navList { display: none; } /* Simplified for Mobile */
+  .landingMainContainer h1 { font-size: 2.8rem; }
+  
+  /* Meeting Room Mobile Tweaks */
+  .videoGrid {
+    grid-template-columns: 1fr !important;
+    padding: 10px !important;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2000;
+  }
+  
+  .mainActionBar {
+    padding: 10px !important;
+    gap: 10px !important;
+    overflow-x: auto;
+    justify-content: flex-start !important;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .mainActionBar::-webkit-scrollbar { display: none; }
+}
+
+@media screen and (max-width: 480px) {
+  .landingMainContainer h1 { font-size: 2.2rem; }
+  .dashboardCard h2 { font-size: 2rem; }
+  .getStartedBtn { width: 100%; padding: 1rem; }
+  
+  .videoWrapper video { border-radius: 12px; }
+  .toolButtonWrapper p { display: none; } /* Hide labels to save space */
+}
+
+/* Animations & Polishing */
+[data-theme='dark'] .glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.heroImageSection {
+    perspective: 1000px;
+}
+
+.heroImageSection img {
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.heroImageSection:hover img {
+    transform: rotateY(-5deg) rotateX(2deg) scale(1.02);
 }
