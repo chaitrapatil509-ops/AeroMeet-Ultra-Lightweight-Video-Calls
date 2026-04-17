@@ -34,7 +34,6 @@ import CreateIcon from '@mui/icons-material/Create';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import DownloadIcon from '@mui/icons-material/Download';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
