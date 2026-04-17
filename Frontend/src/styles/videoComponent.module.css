@@ -343,6 +343,34 @@
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.languageSelect {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.languageSelect:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+}
+
+.languageSelect option {
+    background: #1e293b;
+    color: white;
+}
+
 @keyframes floatUp {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
     50% { opacity: 1; }

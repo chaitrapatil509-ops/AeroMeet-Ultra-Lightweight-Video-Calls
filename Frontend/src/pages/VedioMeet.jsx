@@ -131,9 +131,11 @@ export default function VideoMeetComponent() {
     const [meetingTranscript, setMeetingTranscript] = useState([]);
     const emojiList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
 
-    // Whiteboard v2 States
-    const [whiteboardActive, setWhiteboardActive] = useState(false);
-    const [wbTool, setWbTool] = useState("pen"); // "pen", "rect", "circle", "eraser"
+    // Global Enterprise Features
+    const [aiLanguage, setAiLanguage] = useState("en-US"); // en-US, hi-IN, es-ES, fr-FR
+    const languageNames = { "en-US": "English", "hi-IN": "Hindi", "es-ES": "Spanish", "fr-FR": "French" };
+    const [performanceMode, setPerformanceMode] = useState(false);
+    const frameCounter = useRef(0);
     const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
@@ -590,7 +592,15 @@ export default function VideoMeetComponent() {
     // Frame processing loop for Virtual effects
     useEffect(() => {
         let animationFrameId;
-        const process = async () => {
+        const processVideoFrame = async () => {
+            frameCounter.current++;
+            
+            // Performance Mode: Skip frames to save CPU (run at ~20-30fps instead of 60)
+            if (performanceMode && frameCounter.current % 3 !== 0) {
+                animationFrameId = requestAnimationFrame(processVideoFrame);
+                return;
+            }
+
             if (activeEffect !== "none" && localVideoref.current && fxEngine.current) {
                 fxEngine.current.isEnabled = true;
                 if (activeEffect === "blur") fxEngine.current.setEffect("blur", 10);
@@ -602,7 +612,6 @@ export default function VideoMeetComponent() {
                 
                 await fxEngine.current.processFrame(localVideoref.current);
                 
-                // Switch outgoing stream to filtered canvas stream
                 const fxStream = fxEngine.current.getStream();
                 const videoTrack = fxStream.getVideoTracks()[0];
                 for (let id in connections) {
@@ -611,20 +620,13 @@ export default function VideoMeetComponent() {
                 }
             } else if (fxEngine.current) {
                 fxEngine.current.isEnabled = false;
-                // Restore original video track
-                if (window.localStream) {
-                    const originalTrack = window.localStream.getVideoTracks()[0];
-                    for (let id in connections) {
-                        const sender = connections[id].getSenders().find(s => s.track.kind === 'video');
-                        if (sender) sender.replaceTrack(originalTrack);
-                    }
-                }
             }
-            animationFrameId = requestAnimationFrame(process);
+            animationFrameId = requestAnimationFrame(processVideoFrame);
         };
-        process();
+        
+        animationFrameId = requestAnimationFrame(processVideoFrame);
         return () => cancelAnimationFrame(animationFrameId);
-    }, [activeEffect, connections]);
+    }, [activeEffect, connections, performanceMode]);
 
     // Advanced Whiteboard v2 Logic
     const startDrawing = (e) => {
@@ -745,11 +747,14 @@ export default function VideoMeetComponent() {
             setAiConversation(prev => [...prev, { sender: "AeroAI", text: response }]);
             setIsAiThinking(false);
 
-            // Optional: Speak the answer back if it was a voice query
-            if (query.toLowerCase().includes("aeroai")) {
-                const speech = new SpeechSynthesisUtterance(response);
-                window.speechSynthesis.speak(speech);
-            }
+            // Multilingual Speech Synthesis
+            const speech = new SpeechSynthesisUtterance(response);
+            const voices = window.speechSynthesis.getVoices();
+            // Try to find a voice that matches the selected language
+            const selectedVoice = voices.find(v => v.lang.startsWith(aiLanguage.split('-')[0])) || voices[0];
+            speech.voice = selectedVoice;
+            speech.lang = aiLanguage;
+            window.speechSynthesis.speak(speech);
         }, 1500);
     };
 
@@ -970,7 +975,15 @@ export default function VideoMeetComponent() {
                                         <div className={styles.sidebarHeader}>
                                             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                                                 <PsychologyIcon style={{color: '#0b5cff'}} />
-                                                <span>AeroAI Meeting Assistant</span>
+                                                <select 
+                                                    value={aiLanguage} 
+                                                    onChange={(e) => setAiLanguage(e.target.value)}
+                                                    className={styles.languageSelect}
+                                                >
+                                                    {Object.entries(languageNames).map(([code, name]) => (
+                                                        <option key={code} value={code}>{name}</option>
+                                                    ))}
+                                                </select>
                                             </div>
                                             <CloseIcon className={styles.closeIcon} onClick={() => setSidebarTab("closed")} />
                                         </div>
@@ -1006,7 +1019,7 @@ export default function VideoMeetComponent() {
                                                 <SendIcon />
                                             </IconButton>
                                         </div>
-                                        <div style={{padding: '0 24px 24px'}}>
+                                        <div style={{padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
                                             <Button 
                                                 fullWidth 
                                                 variant="outlined" 
@@ -1016,6 +1029,11 @@ export default function VideoMeetComponent() {
                                             >
                                                 Generate Call Summary
                                             </Button>
+                                            <FormControlLabel
+                                                control={<Switch checked={performanceMode} onChange={(e) => setPerformanceMode(e.target.checked)} color="primary" />}
+                                                label={<span style={{fontSize: '0.8rem', color: '#94a3b8'}}>Performance Mode (Low CPU)</span>}
+                                                style={{marginLeft: '0'}}
+                                            />
                                         </div>
                                     </div>
                                 )}
