@@ -12,6 +12,18 @@
   --3d-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+[data-theme='light'] {
+  --primary-bg: #f8fafc;
+  --panel-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --accent-color: #0b5cff;
+  --accent-glow: rgba(11, 92, 255, 0.2);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --3d-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
