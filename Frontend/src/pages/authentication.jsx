@@ -15,7 +15,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#0b5cff',
+      main: '#00d2ff',
     },
     background: {
       default: '#111111',
@@ -189,7 +189,7 @@ export default function Authentication() {
         <SnackbarContent
           message={message || "User Registered Successfully!"}
           sx={{
-            backgroundColor: '#0b5cff',
+            backgroundColor: '#00d2ff',
             color: '#fff',
             fontWeight: 700,
             borderRadius: '12px'

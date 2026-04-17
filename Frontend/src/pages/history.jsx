@@ -91,7 +91,7 @@ export default function History() {
                                         <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                                             Code: {e.meetingCode}
                                         </Typography>
-                                        <Typography sx={{ color: '#0b5cff', fontWeight: 500 }}>
+                                        <Typography sx={{ color: '#00d2ff', fontWeight: 500 }}>
                                             Date: {formatDate(e.date)}
                                         </Typography>
                                     </Box>

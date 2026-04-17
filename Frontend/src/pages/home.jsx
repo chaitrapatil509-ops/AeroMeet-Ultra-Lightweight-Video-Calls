@@ -79,7 +79,7 @@ function HomeComponent() {
                             onClick={handleJoinVideoCall} 
                             variant='contained' 
                             style={{
-                                background: '#0b5cff', 
+                                background: '#00d2ff', 
                                 borderRadius: '12px', 
                                 padding: '0 30px', 
                                 fontWeight: 700, 

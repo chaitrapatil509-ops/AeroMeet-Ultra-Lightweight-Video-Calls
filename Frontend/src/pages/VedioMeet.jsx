@@ -534,7 +534,7 @@ export default function VideoMeetComponent() {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'liveconnect-recording.webm';
+                    a.download = 'aeromeet-recording.webm';
                     a.click();
                     recordedChunks.current = [];
                 };
@@ -789,7 +789,7 @@ export default function VideoMeetComponent() {
                         variant="outlined" 
                         style={{ background: 'white', borderRadius: '5px', width: '300px', marginBottom: '20px' }}
                     />
-                    <Button variant="contained" size="large" onClick={connect} style={{marginBottom: "30px", background: "#0b5cff"}}>Join Meeting</Button>
+                    <Button variant="contained" size="large" onClick={connect} style={{marginBottom: "30px", background: "#00d2ff"}}>Join Meeting</Button>
                     <div className={styles.setupVideo}>
                         <video ref={localVideoref} autoPlay muted style={{width: '100%', borderRadius: '12px'}}></video>
                     </div>
@@ -897,7 +897,7 @@ export default function VideoMeetComponent() {
                                                 variant="outlined" 
                                                 size="small"
                                             />
-                                            <IconButton onClick={sendMessage} color="primary" style={{ background: '#0b5cff', color: 'white', borderRadius: '8px' }}>
+                                            <IconButton onClick={sendMessage} color="primary" style={{ background: '#00d2ff', color: 'white', borderRadius: '8px' }}>
                                                 <SendIcon />
                                             </IconButton>
                                         </div>
@@ -974,7 +974,7 @@ export default function VideoMeetComponent() {
                                     <div className={styles.chatContainer}>
                                         <div className={styles.sidebarHeader}>
                                             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                                <PsychologyIcon style={{color: '#0b5cff'}} />
+                                                <PsychologyIcon style={{color: '#00d2ff'}} />
                                                 <select 
                                                     value={aiLanguage} 
                                                     onChange={(e) => setAiLanguage(e.target.value)}
@@ -990,7 +990,7 @@ export default function VideoMeetComponent() {
                                         <div className={styles.chattingDisplay}>
                                             {aiConversation.map((item, index) => (
                                                 <div className={styles.chatMessage} key={index} style={{alignSelf: item.sender === "You" ? 'flex-end' : 'flex-start'}}>
-                                                    <p className={styles.sender} style={{color: item.sender === "AeroAI" ? '#0b5cff' : '#94a3b8'}}>
+                                                    <p className={styles.sender} style={{color: item.sender === "AeroAI" ? '#00d2ff' : '#94a3b8'}}>
                                                         {item.sender === "AeroAI" ? "AeroAI Helper" : "You (Voice/Text)"}
                                                     </p>
                                                     <p className={styles.text} style={{background: item.sender === "AeroAI" ? 'rgba(11, 92, 255, 0.1)' : 'rgba(255,255,255,0.05)', border: item.sender === "AeroAI" ? '1px solid rgba(11, 92, 255, 0.2)' : '1px solid rgba(255,255,255,0.05)'}}>
@@ -1000,7 +1000,7 @@ export default function VideoMeetComponent() {
                                             ))}
                                             {isAiThinking && (
                                                 <div className={styles.chatMessage}>
-                                                    <p className={styles.sender} style={{color: '#0b5cff'}}>AeroAI Helper</p>
+                                                    <p className={styles.sender} style={{color: '#00d2ff'}}>AeroAI Helper</p>
                                                     <p className={styles.text}>Thinking...</p>
                                                 </div>
                                             )}
@@ -1015,9 +1015,13 @@ export default function VideoMeetComponent() {
                                                 variant="outlined" 
                                                 size="small"
                                             />
-                                            <IconButton onClick={() => processAIQuery(aiInput)} color="primary" style={{ background: '#0b5cff', color: 'white', borderRadius: '8px' }}>
+                                            <IconButton onClick={() => processAIQuery(aiInput)} color="primary" style={{ background: '#00d2ff', color: 'white', borderRadius: '8px' }}>
                                                 <SendIcon />
                                             </IconButton>
+                                        </div>
+                                        <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                                            <img src="/logo.png" alt="AeroMeet" style={{ height: '80px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }} />
+                                            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>AeroMeet</h1>
                                         </div>
                                         <div style={{padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
                                             <Button 
@@ -1077,7 +1081,7 @@ export default function VideoMeetComponent() {
                                     </div>
                                 )}
                                 <button className={styles.toolButtonWrapper} onClick={() => setEmojiMenuOpen(!emojiMenuOpen)}>
-                                    <EmojiEmotionsIcon style={{ color: emojiMenuOpen ? "#0b5cff" : "#fff" }} />
+                                    <EmojiEmotionsIcon style={{ color: emojiMenuOpen ? "#00d2ff" : "#fff" }} />
                                     <p>React</p>
                                 </button>
                             </div>
@@ -1093,12 +1097,12 @@ export default function VideoMeetComponent() {
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleWhiteboard}>
-                                <AutoFixHighIcon style={{ color: sidebarTab === "whiteboard" ? "#0b5cff" : "#fff" }} />
+                                <AutoFixHighIcon style={{ color: sidebarTab === "whiteboard" ? "#00d2ff" : "#fff" }} />
                                 <p>Whiteboard</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleCaptions}>
-                                <SubtitlesIcon style={{ color: captionsEnabled ? "#0b5cff" : "#fff" }} />
+                                <SubtitlesIcon style={{ color: captionsEnabled ? "#00d2ff" : "#fff" }} />
                                 <p>Captions</p>
                             </button>
 
@@ -1108,17 +1112,17 @@ export default function VideoMeetComponent() {
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleNotes}>
-                                <EventNoteIcon style={{ color: sidebarTab === "notes" ? "#0b5cff" : "#fff" }} />
+                                <EventNoteIcon style={{ color: sidebarTab === "notes" ? "#00d2ff" : "#fff" }} />
                                 <p>Notes</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={() => setWhiteboardActive(!whiteboardActive)}>
-                                <CreateIcon style={{ color: whiteboardActive ? "#0b5cff" : "#fff" }} />
+                                <CreateIcon style={{ color: whiteboardActive ? "#00d2ff" : "#fff" }} />
                                 <p>Board</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={() => setSidebarTab(sidebarTab === "ai" ? "closed" : "ai")}>
-                                <SmartToyIcon style={{ color: sidebarTab === "ai" ? "#0b5cff" : "#fff" }} />
+                                <SmartToyIcon style={{ color: sidebarTab === "ai" ? "#00d2ff" : "#fff" }} />
                                 <p>AeroAI</p>
                             </button>
 
@@ -1128,17 +1132,17 @@ export default function VideoMeetComponent() {
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={() => handleVideoEffect(activeEffect === "blur" ? "none" : "blur")}>
-                                <BlurOnIcon style={{ color: activeEffect === "blur" ? "#0b5cff" : "#fff" }} />
+                                <BlurOnIcon style={{ color: activeEffect === "blur" ? "#00d2ff" : "#fff" }} />
                                 <p>Blur</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={() => handleVideoEffect(activeEffect === "image" ? "none" : "image")}>
-                                <WallpaperIcon style={{ color: activeEffect === "image" ? "#0b5cff" : "#fff" }} />
+                                <WallpaperIcon style={{ color: activeEffect === "image" ? "#00d2ff" : "#fff" }} />
                                 <p>BG</p>
                             </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleVoiceEnhance}>
-                                <GraphicEqIcon style={{ color: isVoiceEnhanced ? "#0b5cff" : "#fff" }} />
+                                <GraphicEqIcon style={{ color: isVoiceEnhanced ? "#00d2ff" : "#fff" }} />
                                 <p>Voice+</p>
                             </button>
 
