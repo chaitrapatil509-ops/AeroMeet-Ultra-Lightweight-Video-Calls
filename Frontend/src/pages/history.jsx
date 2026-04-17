@@ -25,6 +25,7 @@ export default function History() {
             }
         }
         fetchHistory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const clearAll = async () => {

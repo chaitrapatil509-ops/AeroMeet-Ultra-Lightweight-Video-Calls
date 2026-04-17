@@ -1,4 +1,4 @@
-import { Children, createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import axios from "axios" ;
 import { useNavigate } from 'react-router-dom';
 import httpStatus from "http-status";
@@ -65,8 +65,7 @@ export const AuthProvider = ({ children }) => {
                 }
             });
             return request.data
-        } catch
-         (err) {
+        } catch (err) {
             throw err;
         }
     }
