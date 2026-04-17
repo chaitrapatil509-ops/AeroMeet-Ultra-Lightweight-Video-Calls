@@ -134,7 +134,7 @@ export default function VideoMeetComponent() {
     // Whiteboard v2 States
     const [whiteboardActive, setWhiteboardActive] = useState(false);
     const [wbTool, setWbTool] = useState("pen"); // "pen", "rect", "circle", "eraser"
-    const [wbColor, setWbColor] = useState("#0b5cff");
+    const [wbColor, setWbColor] = useState("#00d2ff");
     const [wbWidth, setWbWidth] = useState(3);
     const [wbShapes, setWbShapes] = useState([]); // Buffer for synced shapes
 
