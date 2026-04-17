@@ -16,6 +16,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import SubtitlesIcon from '@mui/icons-material/Subtitles';
+import PanToolIcon from '@mui/icons-material/PanTool';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 
 import styles from "../styles/videoComponent.module.css";
 import server from '../environment';
@@ -73,6 +76,12 @@ export default function VideoMeetComponent() {
     // Whiteboard State
     const canvasRef = useRef(null);
     let [isDrawing, setIsDrawing] = useState(false);
+
+    // Advanced Features
+    let [flyingEmojis, setFlyingEmojis] = useState([]);
+    let [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
+    let [handRaisedUsers, setHandRaisedUsers] = useState(new Set());
+    const emojiList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
 
     useEffect(() => {
         getPermissions();
@@ -254,6 +263,23 @@ export default function VideoMeetComponent() {
             socketRef.current.on('caption-message', (text, senderId) => {
                 setActiveCaption(`${text}`);
                 setTimeout(() => setActiveCaption(""), 5000); 
+            })
+
+            // Meeting Action receiver (Emojis & Hand Raise)
+            socketRef.current.on('meeting-action', (data, senderId) => {
+                if (data.type === "emoji") {
+                    setFlyingEmojis(prev => [...prev, {id: Date.now() + Math.random(), emoji: data.emoji, left: Math.random() * 80 + 10}]);
+                    setTimeout(() => {
+                        setFlyingEmojis(prev => prev.slice(1));
+                    }, 3000);
+                } else if (data.type === "hand-raise") {
+                    setHandRaisedUsers(prev => {
+                        const newSet = new Set(prev);
+                        if (data.raised) newSet.add(senderId);
+                        else newSet.delete(senderId);
+                        return newSet;
+                    });
+                }
             })
 
             socketRef.current.on('user-left', (id) => {
@@ -487,6 +513,33 @@ export default function VideoMeetComponent() {
         setIsDrawing(false);
     };
 
+    // Advanced Feature Methods
+    const sendEmoji = (emoji) => {
+        socketRef.current.emit("meeting-action", { type: "emoji", emoji });
+        setFlyingEmojis(prev => [...prev, {id: Date.now(), emoji: emoji, left: Math.random() * 80 + 10}]);
+        setTimeout(() => setFlyingEmojis(prev => prev.slice(1)), 3000);
+        setEmojiMenuOpen(false);
+    };
+
+    const toggleHandRaise = () => {
+        const alreadyRaised = handRaisedUsers.has(socketIdRef.current);
+        setHandRaisedUsers(prev => {
+            const newSet = new Set(prev);
+            if(!alreadyRaised) newSet.add(socketIdRef.current);
+            else newSet.delete(socketIdRef.current);
+            return newSet;
+        });
+        socketRef.current.emit("meeting-action", { type: "hand-raise", raised: !alreadyRaised });
+    };
+
+    const togglePiP = async () => {
+        if (document.pictureInPictureElement) {
+            await document.exitPictureInPicture();
+        } else if (localVideoref.current) {
+            await localVideoref.current.requestPictureInPicture().catch(console.error);
+        }
+    };
+
     let connect = () => {
         setAskForUsername(false);
         getMedia();
@@ -512,6 +565,12 @@ export default function VideoMeetComponent() {
                 </div> 
             ) : (
                 <div className={styles.meetVideoContainer}>
+                    {/* Render Flying Emojis */}
+                    {flyingEmojis.map(item => (
+                        <div key={item.id} className={styles.flyingEmoji} style={{left: `${item.left}%`}}>
+                            {item.emoji}
+                        </div>
+                    ))}
                     
                     <div className={styles.mainLayout}>
                         {/* Video Grid  */}
@@ -525,13 +584,13 @@ export default function VideoMeetComponent() {
                             )}
 
                             <div className={styles.videoGrid}>
-                                <div className={styles.videoWrapper}>
+                                <div className={`${styles.videoWrapper} ${handRaisedUsers.has(socketIdRef.current) ? styles.handRaised : ""}`}>
                                     <video ref={localVideoref} autoPlay muted></video>
                                     <div className={styles.videoOverlay}>{username} (You)</div>
                                 </div>
 
                                 {videos.map((vid) => (
-                                    <div key={vid.socketId} className={styles.videoWrapper}>
+                                    <div key={vid.socketId} className={`${styles.videoWrapper} ${handRaisedUsers.has(vid.socketId) ? styles.handRaised : ""}`}>
                                         <video
                                             data-socket={vid.socketId}
                                             ref={ref => { if (ref && vid.stream) ref.srcObject = vid.stream; }}
@@ -650,6 +709,30 @@ export default function VideoMeetComponent() {
                                     <p>{screen === true ? "Stop Share" : "Share Screen"}</p>
                                 </button>
                             )}
+
+                            <div style={{position: 'relative'}}>
+                                {emojiMenuOpen && (
+                                    <div className={styles.emojiMenu}>
+                                        {emojiList.map(emp => (
+                                            <span key={emp} className={styles.emojiSelect} onClick={() => sendEmoji(emp)}>{emp}</span>
+                                        ))}
+                                    </div>
+                                )}
+                                <button className={styles.toolButtonWrapper} onClick={() => setEmojiMenuOpen(!emojiMenuOpen)}>
+                                    <EmojiEmotionsIcon style={{ color: emojiMenuOpen ? "#0b5cff" : "#fff" }} />
+                                    <p>React</p>
+                                </button>
+                            </div>
+
+                            <button className={styles.toolButtonWrapper} onClick={toggleHandRaise}>
+                                <PanToolIcon style={{ color: handRaisedUsers.has(socketIdRef.current) ? "#fbbc05" : "#fff" }} />
+                                <p>Raise Hand</p>
+                            </button>
+
+                            <button className={styles.toolButtonWrapper} onClick={togglePiP}>
+                                <PictureInPictureAltIcon style={{ color: "#fff" }} />
+                                <p>PiP</p>
+                            </button>
 
                             <button className={styles.toolButtonWrapper} onClick={toggleWhiteboard}>
                                 <AutoFixHighIcon style={{ color: sidebarTab === "whiteboard" ? "#0b5cff" : "#fff" }} />

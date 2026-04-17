@@ -49,13 +49,13 @@ export default function History() {
 
     return (
         <div className="landingPageContainer" style={{ minHeight: '100vh', overflowY: 'auto' }}>
-            <div className="navBar" style={{backdropFilter: 'blur(10px)', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)'}}>
+            <div className="navBar">
                 <div style={{ display: "flex", alignItems: "center", gap: '10px' }}>
                     <IconButton onClick={() => navigate("/home")} style={{color: 'white'}}>
                         <HomeIcon />
                     </IconButton>
-                    <h2 style={{fontWeight: 700, margin: 0, background: 'linear-gradient(90deg, #fff, #0b5cff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
-                        Meeting History
+                    <h2 style={{fontWeight: 800, margin: 0}} className="gradient-text">
+                        AeroMeet History
                     </h2>
                 </div>
 

@@ -62,12 +62,12 @@ export default function Authentication() {
   return (
     <ThemeProvider theme={darkTheme}>
       <div style={{
-          height: '100vh',
+          minHeight: '100vh',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'radial-gradient(circle at top right, #1e3a8a 0%, #111111 100%)',
-          width: '100vw'
+          width: '100vw',
+          padding: '2rem'
         }}>
         <CssBaseline />
 

@@ -20,10 +20,10 @@ function HomeComponent() {
 
     return (
         <div className="landingPageContainer" style={{minHeight: '100vh'}}>
-            <div className="navBar" style={{backdropFilter: 'blur(10px)', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)'}}>
+            <div className="navBar">
                 <div style={{ display: "flex", alignItems: "center" }}>
-                    <h2 style={{fontWeight: 700, margin: 0, background: 'linear-gradient(90deg, #fff, #0b5cff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
-                        LiveConnect
+                    <h2 style={{fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #ffffff, #0b5cff, #8a2be2)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shine 3s linear infinite'}}>
+                        AeroMeet
                     </h2>
                 </div>
 
@@ -48,20 +48,10 @@ function HomeComponent() {
                 </div>
             </div>
 
-            <div className="meetContainer" style={{flex: 1}}>
-                <div className="dashboardCard" style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '24px',
-                    padding: '3.5rem',
-                    boxShadow: '0 40px 100px rgba(0,0,0,0.6)',
-                    textAlign: 'center',
-                    maxWidth: '650px',
-                    width: '90%'
-                }}>
-                    <h2 style={{fontSize: '3rem', fontWeight: 800, marginBottom: '1.5rem', letterSpacing: '-1px'}}>
-                        Join or Start <br/> <span style={{color: '#0b5cff'}}>A Meeting</span>
+            <div className="meetContainer">
+                <div className="dashboardCard">
+                    <h2>
+                        Join or Start <br/> <span className="gradient-text">A Meeting</span>
                     </h2>
                     
                     <p style={{color: '#aaa', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Enter a meeting code below to join or simply click join with a code to begin.</p>

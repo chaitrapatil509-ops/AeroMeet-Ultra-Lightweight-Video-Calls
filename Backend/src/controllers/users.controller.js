@@ -14,7 +14,7 @@ const login = async(req, res) => {
     try {
         const user = await User.findOne({username});
         if(!user) {
-            return res.status(httpStatus.NOT_FOUND).json({messege: "User Not Found"});
+            return res.status(httpStatus.NOT_FOUND).json({message: "User Not Found"});
         }
         let isPasswordCorrect = await bcrypt.compare(password, user.password);
 
@@ -38,7 +38,7 @@ const register = async(req, res) => {
     try{
         const existingUser = await User.findOne({ username });
         if(existingUser) {
-            return res.status(httpStatus.FOUND).json({message : "User already exist!!"});
+            return res.status(httpStatus.CONFLICT).json({message : "User already exist!!"});
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -56,7 +56,7 @@ const register = async(req, res) => {
 
 
     } catch(e) {
-        res.json({message: `Something went wrong ${e}`})
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({message: `Something went wrong ${e}`})
     }
 }
 
@@ -65,10 +65,13 @@ const getUserHistory = async (req, res) => {
 
     try {
         const user = await User.findOne({ token: token });
+        if (!user) {
+            return res.status(httpStatus.NOT_FOUND).json({message: "User not found"});
+        }
         const meetings = await Meeting.find({ user_id: user.username })
         res.json(meetings)
     } catch (e) {
-        res.json({ message: `Something went wrong ${e}` })
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: `Something went wrong ${e}` })
     }
 }
 
@@ -77,6 +80,9 @@ const addToHistory = async (req, res) => {
 
     try {
         const user = await User.findOne({ token: token });
+        if (!user) {
+            return res.status(httpStatus.NOT_FOUND).json({message: "User not found"});
+        }
 
         const newMeeting = new Meeting({
             user_id: user.username,
@@ -87,7 +93,7 @@ const addToHistory = async (req, res) => {
 
         res.status(httpStatus.CREATED).json({ message: "Added code to history" })
     } catch (e) {
-        res.json({ message: `Something went wrong ${e}` })
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: `Something went wrong ${e}` })
     }
 }
 
