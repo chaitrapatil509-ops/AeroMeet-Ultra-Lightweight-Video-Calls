@@ -1020,7 +1020,7 @@ export default function VideoMeetComponent() {
                                             </IconButton>
                                         </div>
                                         <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-                                            <img src="/logo.png" alt="AeroMeet" style={{ height: '80px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }} />
+                                            <img src="/logo.svg" alt="AeroMeet" style={{ height: '80px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }} />
                                             <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>AeroMeet</h1>
                                         </div>
                                         <div style={{padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: '8px'}}>

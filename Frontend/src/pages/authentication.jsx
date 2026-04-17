@@ -88,7 +88,7 @@ export default function Authentication() {
           }}
         >
           <img 
-            src="/logo.png" 
+            src="/logo.svg" 
             alt="AeroMeet Logo" 
             style={{ 
               width: '80px', 

@@ -22,7 +22,7 @@ function HomeComponent() {
         <div className="landingPageContainer" style={{minHeight: '100vh'}}>
             <div className="navBar">
                 <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                    <img src="/logo.png" alt="AeroMeet 3D Logo" style={{height: '38px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))'}} />
+                    <img src="/logo.svg" alt="AeroMeet 3D Logo" style={{height: '38px', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))'}} />
                     <h2 style={{fontWeight: 700, margin: 0, color: '#fff', letterSpacing: '-0.5px'}}>
                         AeroMeet
                     </h2>
