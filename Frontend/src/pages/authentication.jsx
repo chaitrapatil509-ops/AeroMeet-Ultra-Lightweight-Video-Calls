@@ -87,9 +87,16 @@ export default function Authentication() {
             maxWidth: '450px'
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: '#0b5cff', width: 56, height: 56 }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <img 
+            src="/logo.png" 
+            alt="AeroMeet Logo" 
+            style={{ 
+              width: '80px', 
+              height: '80px', 
+              marginBottom: '1rem', 
+              filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' 
+            }} 
+          />
 
           <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '1rem 0' }}>
             {formState === 0 ? "Welcome Back" : "Create Account"}
